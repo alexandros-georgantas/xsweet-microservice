@@ -4,31 +4,50 @@ services:
   server:
     depends_on:
       - db
-    build: 
+    build:
       context: .
-      dockerfile: ./Dockerfile
-    restart: always
-    ports: 
+      dockerfile: ./Dockerfile.development
+    ports:
       - ${SERVER_PORT:-3000}:3000
     environment:
       - PUBSWEET_SECRET=${PUBSWEET_SECRET:-dev_secret}
-      - POSTGRES_USER=${POSTGRES_USER:-service-xsweet_user_dev}
+      - POSTGRES_USER=${POSTGRES_USER:-xsweet_user_dev}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secretpassword}
       - POSTGRES_HOST=db
-      - POSTGRES_DB=${POSTGRES_DB:-service-xsweet_dev_db}
+      - POSTGRES_DB=${POSTGRES_DB:-xsweet_dev_db}
       - POSTGRES_PORT=5432
       - SERVER_PORT=3000
       - NODE_ENV=${NODE_ENV:-development}
       - WAIT_SERVICE_PORT=db:5432
+    entrypoint:
+      [
+        'sh',
+        'scripts/wait-for-it.sh',
+        'db:5432',
+        '--',
+        'sh',
+        'scripts/setupDevServer.sh',
+      ]
+    command:
+      [
+        'node_modules/.bin/nodemon',
+        './server/startServer.js',
+        '--watch',
+        'server',
+        '--watch',
+        'config',
+        '--ext',
+        'js,graphql',
+      ]
+    volumes:
+      - ./server:/home/node/xsweet/server
+      - ./config:/home/node/xsweet/config
+
   db:
-    image: postgres:10-alpine
-    restart: always
+    image: postgres:12-alpine
     ports:
       - ${POSTGRES_PORT:-5432}:5432
     environment:
       - POSTGRES_USER
       - POSTGRES_DB
       - POSTGRES_PASSWORD
-      - POSTGRES_PORT
-    # volumes:
-    #   - ./database/data:/var/lib/postgresql/data

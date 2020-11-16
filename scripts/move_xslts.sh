@@ -1,5 +1,4 @@
 #!/bin/sh
-set -x
 # Directory of script
 DIRECTORY=$(cd `dirname $0` && pwd)
 
