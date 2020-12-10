@@ -1,6 +1,6 @@
 FROM node:12-alpine
 
-RUN apk update && apk add --no-cache unzip openjdk11-jre-headless
+RUN apk update && apk add --no-cache unzip openjdk11-jre-headless git
 
 WORKDIR /home/node/xsweet
 # Download XSweet
@@ -23,8 +23,9 @@ RUN yarn
 COPY --chown=node:node . .
 
 RUN chmod +x ./scripts/move_xslts.sh
-RUN chmod +x ./scripts/wait-for-it.sh
 RUN chmod +x ./scripts/execute_chain.sh
 RUN ./scripts/move_xslts.sh
 
-ENTRYPOINT . scripts/startServer.sh
+ENTRYPOINT ["sh", "./scripts/setupProdServer.sh"]
+
+CMD ["node", "./server/startServer.js"]
