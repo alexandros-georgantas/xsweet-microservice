@@ -1,32 +1,19 @@
 const tmp = require('tmp-promise')
 const fs = require('fs-extra')
 const path = require('path')
-const { execSync, execFileSync } = require('child_process')
-// const logger = require('@pubsweet/logger')
+const { exec, execFile } = require('child_process')
+const cheerio = require('cheerio')
 const { authenticate } = require('@coko/service-auth')
 
-const { uploadHandler } = require('./helpers')
+const { uploadHandler, readFile, writeFile } = require('./helpers')
 
-// encode file to base64
-const base64EncodeFile = originalPath =>
-  fs.readFileSync(originalPath).toString('base64')
-
-const imagesToBase64 = html => {
-  // create array of the img elements in the HTML file
-  const images = html.match(/<img src="file:.*?">/g)
-  // create corresponding array of img paths
-  const paths = images.map(el => el.slice(15, el.length - 2))
-
-  // swap out img path elements with inline base64 picture elements
-  paths.forEach((p, index) => {
-    const ext = p.slice(p.lastIndexOf('.') + 1, p.length)
-    const imageInBase64 = `<img src="data:image/${ext};base64,${base64EncodeFile(
-      p,
-    )}" />`
-    html = html.replace(images[index], imageInBase64)
+const imageCleaner = html => {
+  const $ = cheerio.load(html)
+  $('img[src]').each((i, elem) => {
+    const $elem = $(elem)
+    $elem.remove()
   })
-
-  return html
+  return $.html()
 }
 
 const docxToHTML = async (req, res) => {
@@ -39,7 +26,7 @@ const docxToHTML = async (req, res) => {
     }
     const { path: filePath } = req.file
 
-    const buf = fs.readFileSync(filePath)
+    const buf = await readFile(filePath)
 
     const { path: tmpDir, cleanup } = await tmp.dir({
       prefix: '_conversion-',
@@ -47,43 +34,52 @@ const docxToHTML = async (req, res) => {
       dir: process.cwd(),
     })
 
-    fs.writeFileSync(path.join(tmpDir, path.basename(filePath)), buf)
-    execFileSync('unzip', [
-      '-o',
-      `${tmpDir}/${path.basename(filePath)}`,
-      '-d',
-      tmpDir,
-    ])
+    await writeFile(path.join(tmpDir, path.basename(filePath)), buf)
 
-    execSync(
-      `sh ${path.resolve(
-        __dirname,
-        '..',
-        '..',
-        'scripts',
-        'execute_chain.sh',
-      )} ${tmpDir}`,
-    )
-    const html = fs.readFileSync(
+    await new Promise((resolve, reject) => {
+      execFile(
+        'unzip',
+        ['-o', `${tmpDir}/${path.basename(filePath)}`, '-d', tmpDir],
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(error)
+          }
+          resolve(stdout)
+        },
+      )
+    })
+
+    await new Promise((resolve, reject) => {
+      exec(
+        `sh ${path.resolve(
+          __dirname,
+          '..',
+          '..',
+          'scripts',
+          'execute_chain.sh',
+        )} ${tmpDir}`,
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(error)
+          }
+          resolve(stdout)
+        },
+      )
+    })
+    const html = await readFile(
       path.join(tmpDir, 'outputs', 'HTML5.html'),
       'utf8',
     )
-
-    let processedHtml
-    try {
-      processedHtml = imagesToBase64(html)
-    } catch (e) {
-      processedHtml = html
-    }
+    const cleaned = imageCleaner(html)
 
     await cleanup()
     await fs.remove(filePath)
 
     return res.status(200).json({
-      html: processedHtml,
+      html: cleaned,
     })
   } catch (e) {
-    throw new Error('Conversion error')
+    return res.status(500).json({ msg: e.toString() })
   }
 }
 
