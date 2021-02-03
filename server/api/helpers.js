@@ -1,10 +1,11 @@
 const multer = require('multer')
 const path = require('path')
-const fs = require('fs-extra')
+const fs = require('fs')
+const fse = require('fs-extra')
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    await fs.ensureDir('temp/')
+    await fse.ensureDir('temp/')
     return cb(null, 'temp/')
   },
 
@@ -26,4 +27,34 @@ const fileFilter = (req, file, cb) => {
 }
 const uploadHandler = multer({ storage, fileFilter }).single('docx')
 
-module.exports = { uploadHandler }
+const readFile = (filePath, encoding = undefined) =>
+  new Promise((resolve, reject) => {
+    if (encoding) {
+      fs.readFile(filePath, encoding, (err, data) => {
+        if (err) {
+          return reject(err)
+        }
+        return resolve(data)
+      })
+    } else {
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          return reject(err)
+        }
+        return resolve(data)
+      })
+    }
+  })
+
+const writeFile = (filePath, data) =>
+  new Promise((resolve, reject) => {
+    fs.writeFile(filePath, data, err => {
+      if (err) {
+        return reject(err)
+      }
+      console.log('write done')
+      resolve(true)
+    })
+  })
+
+module.exports = { uploadHandler, readFile, writeFile }

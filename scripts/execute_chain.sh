@@ -29,7 +29,7 @@ PIPELINE="${XSWEET}/applications/PIPELINE.xsl"                       # "Extracti
 XMLTOHTML5="${XSWEET}/applications/html-polish/html5-serialize.xsl"
 
 
-$saxonHE -xsl:$PIPELINE -s:$TEMP/word/document.xml -o:$TEMP/outputs/PIPELINED.xhtml
+$saxonHE -threads:10 -xsl:$PIPELINE -s:$TEMP/word/document.xml -o:$TEMP/outputs/PIPELINED.xhtml
 
 if [ $? -eq 0 ]
 then
@@ -39,7 +39,7 @@ else
   exit 1
 fi
 
-$saxonHE -xsl:$XMLTOHTML5 -s:$TEMP/outputs/PIPELINED.xhtml -o:$TEMP/outputs/HTML5.html
+$saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/PIPELINED.xhtml -o:$TEMP/outputs/HTML5.html
 
 if [ $? -eq 0 ]
 then
