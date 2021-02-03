@@ -8,13 +8,11 @@ const { authenticate } = require('@coko/service-auth')
 const { uploadHandler, readFile, writeFile } = require('./helpers')
 
 const imageCleaner = html => {
-  console.log('1', html)
   const $ = cheerio.load(html)
   $('img[src]').each((i, elem) => {
     const $elem = $(elem)
     $elem.remove()
   })
-  console.log('2', $.html())
   return $.html()
 }
 

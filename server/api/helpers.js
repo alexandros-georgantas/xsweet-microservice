@@ -52,7 +52,6 @@ const writeFile = (filePath, data) =>
       if (err) {
         return reject(err)
       }
-      console.log('write done')
       resolve(true)
     })
   })
