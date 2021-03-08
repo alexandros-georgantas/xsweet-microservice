@@ -1,4 +1,4 @@
-// const tmp = require('tmp-promise')
+const tmp = require('tmp-promise')
 const fs = require('fs-extra')
 const path = require('path')
 const { exec, execFile } = require('child_process')
