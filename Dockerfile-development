@@ -4,12 +4,12 @@ RUN apk update && apk add --no-cache ranger vim bash coreutils unzip openjdk11-j
 
 WORKDIR /home/node/xsweet
 # Download XSweet
-RUN wget https://gitlab.coko.foundation/XSweet/XSweet/repository/archive.zip?ref=master -O xsweet.zip; unzip xsweet.zip; rm xsweet.zip
-RUN wget https://gitlab.coko.foundation/XSweet/editoria_typescript/repository/archive.zip?ref=master -O typescript.zip; unzip typescript.zip; rm typescript.zip
+RUN wget https://gitlab.coko.foundation/XSweet/XSweet/repository/archive.zip?ref=wax2 -O xsweet.zip; unzip xsweet.zip; rm xsweet.zip
+RUN wget https://gitlab.coko.foundation/XSweet/editoria_typescript/repository/archive.zip?ref=wax2 -O typescript.zip; unzip typescript.zip; rm typescript.zip
 RUN wget https://gitlab.coko.foundation/XSweet/HTMLevator/repository/archive.zip?ref=master -O htmlevator.zip; unzip htmlevator.zip; rm htmlevator.zip
 
 # Download Saxon
-RUN wget "https://downloads.sourceforge.net/project/saxon/Saxon-HE/9.9/SaxonHE9-9-1-1J.zip" -O saxon.zip; unzip saxon.zip -d saxon; rm saxon.zip
+RUN wget "https://sourceforge.net/projects/saxon/files/Saxon-HE/10/Java/SaxonHE10-3J.zip/download" -O saxon.zip; unzip saxon.zip -d saxon; rm saxon.zip
 
 RUN chown -R node:node /home/node/xsweet
 

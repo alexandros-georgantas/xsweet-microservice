@@ -21,7 +21,7 @@ echo $XSWEET
 # echo $HTMLEVATOR
 
 # Note Saxon is included with this distribution, qv for license.
-saxonHE="java -jar ${SAXONDIR}/saxon9he.jar"  # SaxonHE (XSLT 3.0 processor)
+saxonHE="java -jar ${SAXONDIR}/saxon-he-10.3.jar"  # SaxonHE (XSLT 3.0 processor)
 
 # EXTRACTION
 PIPELINE="${XSWEET}/applications/PIPELINE.xsl"                       # "Extraction" stylesheet

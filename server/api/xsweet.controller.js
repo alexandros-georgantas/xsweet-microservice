@@ -1,4 +1,4 @@
-const tmp = require('tmp-promise')
+// const tmp = require('tmp-promise')
 const fs = require('fs-extra')
 const path = require('path')
 const { exec, execFile } = require('child_process')
@@ -14,6 +14,16 @@ const imageCleaner = html => {
     $elem.remove()
   })
   return $.html()
+}
+
+const contentFixer = html => {
+  const $ = cheerio.load(html)
+  $('p').each((i, elem) => {
+    const $elem = $(elem)
+    if (!$elem.attr('class')) {
+      $elem.attr('class', 'paragraph')
+    }
+  })
 }
 
 const docxToHTML = async (req, res) => {
@@ -71,12 +81,13 @@ const docxToHTML = async (req, res) => {
       'utf8',
     )
     const cleaned = imageCleaner(html)
+    const fixed = contentFixer(cleaned)
 
     await cleanup()
     await fs.remove(filePath)
 
     return res.status(200).json({
-      html: cleaned,
+      html: fixed,
     })
   } catch (e) {
     return res.status(500).json({ msg: e.toString() })

@@ -26,7 +26,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@coko/server": "^1.8.0",
+    "@coko/server": "^1.9.0",
     "@coko/service-auth": "^1.1.6",
     "cheerio": "^1.0.0-rc.5",
     "config": "^3.3.2",
@@ -46,6 +46,9 @@
     "commitizen": {
       "path": "cz-customizable"
     }
+  },
+  "resolutions": {
+    "pg-boss": "5.2.1"
   },
   "husky": {
     "hooks": {

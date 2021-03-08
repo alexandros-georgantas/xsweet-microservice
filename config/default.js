@@ -24,11 +24,11 @@ module.exports = {
   'pubsweet-server': {
     db: {},
     logger,
-    useJobQueue: false,
     port: 3000,
     protocol: 'http',
     host: 'localhost',
     useGraphQLServer: false,
+    useJobQueue: false,
     pool: { min: 0, max: 10, idleTimeoutMillis: 1000 },
   },
 }
