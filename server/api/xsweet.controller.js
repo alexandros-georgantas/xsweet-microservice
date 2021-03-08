@@ -24,6 +24,7 @@ const contentFixer = html => {
       $elem.attr('class', 'paragraph')
     }
   })
+  return $('container').html()
 }
 
 const docxToHTML = async (req, res) => {
