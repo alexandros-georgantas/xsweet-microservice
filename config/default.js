@@ -16,7 +16,6 @@ module.exports = {
   authsome: {
     mode: path.join(__dirname, 'authsome.js'),
   },
-
   publicKeys: ['pubsweet', 'pubsweet-server'],
   pubsweet: {
     components,
@@ -28,7 +27,7 @@ module.exports = {
     protocol: 'http',
     host: 'localhost',
     useGraphQLServer: false,
-    useJobQueue: false,
+    useJobQueue: true,
     pool: { min: 0, max: 10, idleTimeoutMillis: 1000 },
   },
 }
