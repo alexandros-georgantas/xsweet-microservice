@@ -1,6 +1,6 @@
 FROM node:12-alpine
 
-RUN apk update && apk add --no-cache unzip openjdk11-jre-headless git
+RUN apk update && apk add --no-cache unzip bash openjdk11-jre-headless git
 
 WORKDIR /home/node/xsweet
 # Download XSweet

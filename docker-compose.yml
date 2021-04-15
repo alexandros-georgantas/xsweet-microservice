@@ -45,9 +45,12 @@ services:
 
   db:
     image: postgres:12-alpine
-    # ports:
-    #   - ${POSTGRES_PORT:-5432}:5432
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
     environment:
       - POSTGRES_USER=${POSTGRES_USER:-xsweet_user_dev}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secretpassword}
       - POSTGRES_DB=${POSTGRES_DB:-xsweet_dev_db}
+    volumes:
+      - ./scripts/init-pgboss.sql:/docker-entrypoint-initdb.d/init-pgboss.sql
+  
