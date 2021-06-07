@@ -4,9 +4,9 @@ RUN apk update && apk add --no-cache unzip bash openjdk11-jre-headless git coreu
 
 WORKDIR /home/node/xsweet
 # Download XSweet
-RUN wget https://gitlab.coko.foundation/XSweet/XSweet/repository/archive.zip?ref=wax2 -O xsweet.zip; unzip xsweet.zip; rm xsweet.zip
-RUN wget https://gitlab.coko.foundation/XSweet/editoria_typescript/repository/archive.zip?ref=wax2 -O typescript.zip; unzip typescript.zip; rm typescript.zip
-RUN wget https://gitlab.coko.foundation/XSweet/HTMLevator/repository/archive.zip?ref=master -O htmlevator.zip; unzip htmlevator.zip; rm htmlevator.zip
+RUN wget https://gitlab.coko.foundation/XSweet/XSweet/-/archive/wax2/XSweet-wax2.zip -O xsweet.zip; unzip xsweet.zip; rm xsweet.zip
+RUN wget https://gitlab.coko.foundation/XSweet/editoria_typescript/-/archive/wax2/editoria_typescript-wax2.zip -O typescript.zip; unzip typescript.zip; rm typescript.zip
+RUN wget https://gitlab.coko.foundation/XSweet/HTMLevator/-/archive/wax2/HTMLevator-wax2.zip -O htmlevator.zip; unzip htmlevator.zip; rm htmlevator.zip
 
 # Download Saxon
 RUN wget "https://sourceforge.net/projects/saxon/files/Saxon-HE/10/Java/SaxonHE10-3J.zip/download" -O saxon.zip; unzip saxon.zip -d saxon; rm saxon.zip
