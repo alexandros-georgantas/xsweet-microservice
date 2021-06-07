@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v1.1.0...v1.1.1) (2021-06-07)
+
+
+### Bug Fixes
+
+* **service:** added correct links ([1a813a3](https://gitlab.coko.foundation/cokoapps/xsweet/commit/1a813a3ba5e428f360b138b1c9efc36623d2db72))
+* **service:** headings fix ([042875d](https://gitlab.coko.foundation/cokoapps/xsweet/commit/042875d4c584b7bd7f6121328970322d88b1bf4a))
+
 ## 1.1.0 (2021-04-15)
 
 
