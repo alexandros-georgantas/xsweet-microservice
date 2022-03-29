@@ -55,4 +55,6 @@ for DOCi in $SPLITFILES; do
        exit 1
     fi
 done
+#Cleaning multi-html for cheerio
+sed -i "s/<\/body>/<hr style='height:10px;width:100%;background-color:black;'>/g" $TEMP/outputs/HTML5.html
 
