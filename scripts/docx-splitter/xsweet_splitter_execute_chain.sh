@@ -20,5 +20,5 @@ SPLITFILES=$(cat $TOC|grep -oP "<file>[^<>]+<"|sed "s/<file>//"|tr -d "<")
 for DOCi in $SPLITFILES; do
     N=$(echo "${DOCi}"|grep -oP "[0-9]+")
     # Calling XSweet Pipeline here:    
-    ./splitter_execute_chain.sh ${DOCXMLDIR} ${N}"
+    ./nth_xsweet_execute_chain.sh ${DOCXMLDIR} ${N}"
 done
