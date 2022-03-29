@@ -44,6 +44,8 @@ for DOCi in $SPLITFILES; do
     N=$(echo "${DOCi}"|grep -oP "[0-9]+")
     # Calling XHTML to HTML5 converter here:    
     $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/document$N.html -o:$TEMP/outputs/HTML5_$N.html
+    #Appending everything to HTML5.html
+    $TEMP/outputs/HTML5_$N.html >> $TEMP/outputs/HTML5.html
     if [ $? -eq 0 ]
        then
 	   echo "Made HTML5_${N}.html"

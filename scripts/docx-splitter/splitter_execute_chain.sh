@@ -41,6 +41,8 @@ else
 fi
 
 $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/PIPELINED$N.xhtml -o:$TEMP/outputs/HTML5_$N.html
+#Appending everything to HTML5.html
+$TEMP/outputs/HTML5_$N.html >> $TEMP/outputs/HTML5.html
 
 if [ $? -eq 0 ]
 then

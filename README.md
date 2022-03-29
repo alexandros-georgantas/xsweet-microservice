@@ -6,10 +6,11 @@ This standalone service exposes the functionality of converting a docx file into
 
 - `POST /api/auth`
 - `POST /api/docxToHTML`
+- `POST /api/splitDocxToHTML`
 
 1. As this service is meant to be from many clients, the first endpoint allows clients to acquire their access tokens in order to be able to use the service\*. A call to the `api/auth` endpoint considered valid if it contains the Authorization header with value `Basic base64encoded(clientId:clientSecret)`.  
    The response of a valid call to the `api/auth` will return an `accessToken`\*\* (JWT)
-2. A call to the `api/docxToHTML` in order to be considered valid should have the `Authorization` property in its headers with value `Bearer <the value of an accessToken provided by this service>`. The property `Content-Type` should be `multipart/form-data` and finally the body should contain the actual docx file under a form field called `docx`.  
+2. A call to the `/api/docxToHTML` (or `/api/splitDocxToHTML`) in order to be considered valid should have the `Authorization` property in its headers with value `Bearer <the value of an accessToken provided by this service>`. The property `Content-Type` should be `multipart/form-data` and finally the body should contain the actual docx file under a form field called `docx`.  
    The response of this endpoint will be a `JSON` object:
 
 - `html`: the converted content
