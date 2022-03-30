@@ -46,6 +46,8 @@ for DOCi in $SPLITFILES; do
     $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/document$N.html -o:$TEMP/outputs/HTML5_$N.html
     #Appending everything to HTML5.html
     $TEMP/outputs/HTML5_$N.html >> $TEMP/outputs/HTML5.html
+    #Cleaning multi-html for cheerio
+    sed -i "s/<\/body>/<hr style='height:10px;width:100%;background-color:black;'>/g" $TEMP/outputs/HTML5.html
     if [ $? -eq 0 ]
        then
 	   echo "Made HTML5_${N}.html"
@@ -55,6 +57,8 @@ for DOCi in $SPLITFILES; do
        exit 1
     fi
 done
-#Cleaning multi-html for cheerio
-sed -i "s/<\/body>/<hr style='height:10px;width:100%;background-color:black;'>/g" $TEMP/outputs/HTML5.html
 
+#If unsplit go to default 
+if [[ $SPLITFILES == *"document"* ]]; then
+    $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs//PIPELINED.xhtml -o:$TEMP/outputs/HTML5.html
+fi
