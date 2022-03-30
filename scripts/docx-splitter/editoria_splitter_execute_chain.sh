@@ -60,5 +60,7 @@ done
 
 #If unsplit go to default 
 if [[ $SPLITFILES == *"document"* ]]; then
+    #do nothing
+else
     $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs//PIPELINED.xhtml -o:$TEMP/outputs/HTML5.html
 fi

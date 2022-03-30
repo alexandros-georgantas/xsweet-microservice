@@ -25,6 +25,8 @@ for DOCi in $SPLITFILES; do
 done
 #If unsplit go to default 
 if [[ $SPLITFILES == *"document"* ]]; then
+   #do nothing
+else
    cd ..
    ./execute_chain.sh
 fi
