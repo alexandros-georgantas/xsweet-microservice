@@ -117,7 +117,8 @@ const queueHandler = async (
           '..',
           '..',
           'scripts',
-          'execute_chain.sh',
+          'docx-splitter',
+          'xsweet_splitter_execute_chain.sh',
         )} ${tmpDir}`,
         (error, stdout, stderr) => {
           if (error) {

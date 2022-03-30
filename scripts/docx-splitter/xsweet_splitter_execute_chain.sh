@@ -1,5 +1,6 @@
 #!/bin/bash
 #A docx splitter preprocessor shell script for XSweet pipeline
+#Also a wrapper for default XSweet pipeline for testing purposes
 
 
 # Directory of script
@@ -22,3 +23,8 @@ for DOCi in $SPLITFILES; do
     # Calling XSweet Pipeline here:    
     ./nth_xsweet_execute_chain.sh ${DOCXMLDIR} ${N}"
 done
+#If unsplit go to default 
+if [[ $SPLITFILES == *"document"* ]]; then
+   cd ..
+   ./execute_chain.sh
+fi
