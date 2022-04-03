@@ -43,8 +43,8 @@ fi
 $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/PIPELINED$N.xhtml -o:$TEMP/outputs/HTML5_$N.html
 #Appending everything to HTML5.html
 $TEMP/outputs/HTML5_$N.html >> $TEMP/outputs/HTML5.html
-#Cleaning multi-html for cheerio
-sed -i "s/<\/body>/<hr style='height:10px;width:100%;background-color:black;'>/g" $TEMP/outputs/HTML5.html
+#Cleaning merged multi-html for cheerio
+sed -i "s/<\/body>/<div id='docx_split${N}' class='docx_split_rule'><b class='scissor'>&#x2702;</b></div>/g" $TEMP/outputs/HTML5.html
 if [ $? -eq 0 ]
 then
   echo "Made HTML5_${N}.html"
