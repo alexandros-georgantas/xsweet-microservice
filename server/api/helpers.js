@@ -79,6 +79,57 @@ const writeFile = (filePath, data) =>
     })
   })
 
+const conversionHandler = async filePath => {
+  const buf = await readFile(filePath)
+  const { path: tmpDir, cleanup } = await tmp.dir({
+    prefix: '_conversion-',
+    unsafeCleanup: true,
+    dir: process.cwd(),
+  })
+
+  await writeFile(path.join(tmpDir, path.basename(filePath)), buf)
+
+  await new Promise((resolve, reject) => {
+    execFile(
+      'unzip',
+      ['-o', `${tmpDir}/${path.basename(filePath)}`, '-d', tmpDir],
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(stdout)
+      },
+    )
+  })
+
+  await new Promise((resolve, reject) => {
+    exec(
+      `sh ${path.resolve(
+        __dirname,
+        '..',
+        '..',
+        'scripts',
+        'execute_chain.sh',
+      )} ${tmpDir}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(stdout)
+      },
+    )
+  })
+
+  const html = await readFile(
+    path.join(tmpDir, 'outputs', 'HTML5.html'),
+    'utf8',
+  )
+
+  const cleaned = imageCleaner(html)
+  const fixed = contentFixer(cleaned)
+  return fixed
+}
+
 const queueHandler = async (
   filePath,
   callbackURL,
@@ -168,4 +219,10 @@ const queueHandler = async (
   }
 }
 
-module.exports = { uploadHandler, readFile, writeFile, queueHandler }
+module.exports = {
+  uploadHandler,
+  readFile,
+  writeFile,
+  queueHandler,
+  conversionHandler,
+}
