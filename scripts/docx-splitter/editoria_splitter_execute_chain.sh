@@ -23,6 +23,9 @@ echo $XSWEET
 # Note Saxon is included with this distribution, qv for license.
 saxonHE="java -jar ${SAXONDIR}/saxon-he-10.3.jar"  # SaxonHE (XSLT 3.0 processor)
 
+# A simple bug fix in XSweet
+cp $DIRECTORY/docx-html-extract.xsl $XSWEET/applications/docx-extract/
+
 # EXTRACTION
 PIPELINE="${XSWEET}/applications/PIPELINE.xsl"                       # "Extraction" stylesheet
 
@@ -63,5 +66,5 @@ done
 if echo $N|grep -q "^[0-9]+"; then
     echo "do nothing"
 else
-    $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs//PIPELINED.xhtml -o:$TEMP/outputs/HTML5.html
+    $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/PIPELINED.xhtml -o:$TEMP/outputs/HTML5.html
 fi
