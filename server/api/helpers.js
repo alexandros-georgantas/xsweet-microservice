@@ -23,7 +23,8 @@ const contentFixer = html => {
       $elem.attr('class', 'paragraph')
     }
   })
-  return $('container').html()
+  return $.html()
+  //return $('container').html()
 }
 
 const storage = multer.diskStorage({

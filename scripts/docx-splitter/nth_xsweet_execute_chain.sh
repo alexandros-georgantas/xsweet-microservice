@@ -45,18 +45,8 @@ $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/PIPELINED$N.xhtml -o:$TEMP
 cat "${TEMP}/outputs/HTML5_${N}.html" >> $TEMP/outputs/HTML5.html
 #Cleaning merged multi-html for cheerio
 sed -i "s/^<\/body><\/html><[^<>]\+><html[^<>]*>/<div id='docx_split${N}' class='docx_split_rule'><b class='scissor'>\&#x2702;<\/b><\/div>/" $TEMP/outputs/HTML5.html
-#sed -i "s/<container/<div/" $TEMP/outputs/HTML5.html
-#sed -i "s/<\/container>/<\/div>/" $TEMP/outputs/HTML5.html
-sed -i "s/^.*<head>.*\$//" $TEMP/outputs/HTML5.html
-sed -i "s/^.*<\/head>.*\$//" $TEMP/outputs/HTML5.html
-sed -i "s/^<body>\$//" $TEMP/outputs/HTML5.html
-sed -i "s/\(<html[^<>]*>\)\$/\1<body>/" $TEMP/outputs/HTML5.html
 sed -i '/^[[:space:]]*$/d' $TEMP/outputs/HTML5.html
 
-echo '<!DOCTYPE HTML><html>' > $TEMP/outputs/HTML5.html
-echo '<body>' >> $TEMP/outputs/HTML5.html
-echo '<content><p>Hello world.</p></content>' >> $TEMP/outputs/HTML5.html
-echo '</body></html>' >> $TEMP/outputs/HTML5.html
 if [ $? -eq 0 ]
 then
   echo "Made HTML5_${N}.html"

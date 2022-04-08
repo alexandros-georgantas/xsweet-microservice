@@ -29,10 +29,9 @@ for DOCi in $SPLITFILES; do
     $DIRECTORY/nth_xsweet_execute_chain.sh $DOCXMLDIR $N
 done
 #If unsplit go to default 
-if [ "$N" == "" ];
+if echo $N|grep -q '^[0-9]';
 then
     echo "splitting ..."
+else
+    $DIRECTORY/../execute_chain.sh "${DOCXMLDIR}"
 fi
-#else
-#    $DIRECTORY/../execute_chain.sh "${DOCXMLDIR}" "${N}"
-#fi
