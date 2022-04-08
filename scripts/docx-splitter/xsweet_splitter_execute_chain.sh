@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/
 #A docx splitter preprocessor shell script for XSweet pipeline
 #Also a wrapper for default XSweet pipeline for testing purposes
 
@@ -16,17 +16,23 @@ DOCXMLDIR=$1
 TOC="${DOCXMLDIR}/word/toc.xml"
 DOCXSPLITTER="${TYPESCRIPT}/docx-splitter/"
 #DOCXSPLITTER="${XSWEET}/applications/docx-splitter/"
-$saxonHE -xsl:$DOCXSPLITTER/split-for-xsweet.xsl -s:$DOCXMLDIR/word/document.xml -o:$TOC
-SPLITFILES=$(cat $TOC|grep -oP "<file>[^<>]+<"|sed "s/<file>//"|tr -d "<")
+$saxonHE -xsl:$DIRECTORY/split-for-xsweet.xsl -s:$DOCXMLDIR/word/document.xml -o:$TOC
+SPLITFILES=$(cat $TOC|grep -oE "<file>[^<>]*document[0-9]+[.]xml<"|sed "s/<file>//"|tr -d "<")
+
+#Empty HTML5 output file
+mkdir $DOCXMLDIR/outputs/
+echo "" > $DOCXMLDIR/outputs/HTML5.html
+N=""
 for DOCi in $SPLITFILES; do
-    N=$(echo "${DOCi}"|grep -oP "[0-9]+")
+    N=$(echo "${DOCi}"|grep -oE "[0-9]+")
     # Calling XSweet Pipeline here:    
-    ./nth_xsweet_execute_chain.sh ${DOCXMLDIR} ${N}"
+    $DIRECTORY/nth_xsweet_execute_chain.sh $DOCXMLDIR $N
 done
 #If unsplit go to default 
-if [[ $SPLITFILES == *"document"* ]]; then
-   #do nothing
-else
-   cd ..
-   ./execute_chain.sh
+if [ "$N" == "" ];
+then
+    echo "splitting ..."
 fi
+#else
+#    $DIRECTORY/../execute_chain.sh "${DOCXMLDIR}" "${N}"
+#fi
