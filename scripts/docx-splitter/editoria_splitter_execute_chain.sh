@@ -40,6 +40,7 @@ fi
 
 $saxonHE -xsl:$DOCXSPLITTER/split-html.xsl -s:$TEMP/outputs/PIPELINED.xhtml -o:$TOC
 SPLITFILES=$(cat $TOC|grep -oP "<div [^<>]+><a href=\"document[0-9]+[.]html\">[^<>]+<"|sed "s/<div [^<>]\+><a href=\"document[0-9]\+[.]html\">//"|tr -d "<")
+N=""
 for DOCi in $SPLITFILES; do
     N=$(echo "${DOCi}"|grep -oP "[0-9]+")
     # Calling XHTML to HTML5 converter here:    
@@ -59,8 +60,8 @@ for DOCi in $SPLITFILES; do
 done
 
 #If unsplit go to default 
-if [[ $SPLITFILES == *"document"* ]]; then
-    #do nothing
+if echo $N|grep -q "^[0-9]+"; then
+    echo "do nothing"
 else
     $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs//PIPELINED.xhtml -o:$TEMP/outputs/HTML5.html
 fi

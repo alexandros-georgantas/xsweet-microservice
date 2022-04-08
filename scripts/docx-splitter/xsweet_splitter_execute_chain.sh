@@ -10,7 +10,8 @@ XSWEET=$(find ${DIRECTORY}/../.. -maxdepth 1  -name "XSweet*" -print -quit)
 TYPESCRIPT=$(find ${DIRECTORY}/../.. -maxdepth 1  -name 'editoria_typescript*' -print -quit)
 # Note Saxon is included with this distribution, qv for license.
 saxonHE="java -jar ${SAXONDIR}/saxon-he-10.3.jar"  # SaxonHE (XSLT 3.0 processor)
-
+# A simple bug fix in XSweet
+cp $DIRECTORY/docx-html-extract.xsl $XSWEET/applications/docx-extract/
 
 DOCXMLDIR=$1
 TOC="${DOCXMLDIR}/word/toc.xml"
