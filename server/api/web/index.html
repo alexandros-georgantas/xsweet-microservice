@@ -8,20 +8,20 @@
         const formData = new FormData(form);
         var foo = fileInput.files[0];
         var fileName = foo.name;
-        formData.append('file', foo);
+        formData.append('docx', foo);
 
         const options = {
           method: 'POST',
           body: formData,
           headers:
               {
-		'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImNsaWVudElkIjoiNTlhMzM5MmItMGM0Zi00MzE4LWJiZTItZjg2ZWZmNmQzZGU0In0s
+		'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImNsaWVudElkIjoiNTlhMzM5MmItMGM0Zi00MzE4LWJiZTItZjg2ZWZmNmQzZGU0In0sImlhdCI6MTY0OTQyMTc1NCwiZXhwIjoxNjc4MjIxNzU0fQ.ZJALleUcAyUmPSB_wryNbihSe-KlxByYPbATJm0NFPM',
         	'Content-Type': 'multipart/form-data',                
         	'Content-Disposition': "form-data; name='docx'; filename='" + fileName + "'" //                
               }
         };
 
-        fetch('/api/docxToHTMLSync', options);
+        fetch('http://127.0.0.1:3000/api/docxToHTMLSync', options)
         .then(response => response.json())
         .then(data => {
           console.log('Success:', data);
