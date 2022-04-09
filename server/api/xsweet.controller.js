@@ -1,3 +1,4 @@
+const path = require('path')
 const { boss } = require('@coko/server')
 const { authenticate } = require('@coko/service-auth')
 
@@ -69,6 +70,9 @@ const docxToHTMLSync = async (req, res) => {
 const xSweetServiceBackend = app => {
   app.post('/api/docxToHTML', authenticate, uploadHandler, docxToHTML)
   app.post('/api/docxToHTMLSync', authenticate, uploadHandler, docxToHTMLSync)
+  app.get("/", (req, res) => {
+      res.status(200).sendFile(path.resolve(__dirname, "web", "index.html"));
+  });
 }
 
 module.exports = xSweetServiceBackend

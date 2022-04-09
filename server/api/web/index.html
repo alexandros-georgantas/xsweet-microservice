@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>Test page for Docx Splitter</title>
+    <script>
+      function postFormData() {
+        const fileInput = document.querySelector('#docx');
+        const form = document.querySelector('#form');
+        const formData = new FormData(form);
+        var foo = fileInput.files[0];
+        var fileName = foo.name;
+        formData.append('file', foo);
+
+        const options = {
+          method: 'POST',
+          body: formData,
+          headers:
+              {
+		'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImNsaWVudElkIjoiNTlhMzM5MmItMGM0Zi00MzE4LWJiZTItZjg2ZWZmNmQzZGU0In0s
+        	'Content-Type': 'multipart/form-data',                
+        	'Content-Disposition': "form-data; name='docx'; filename='" + fileName + "'" //                
+              }
+        };
+
+        fetch('/api/docxToHTMLSync', options);
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+     }
+    </script>
+  </head>
+  <body>
+    <h1>Test page for Docx Splitter</h1>
+    <p>Load Docx file for splitting here:</p>
+    <form id="form" enctype="multipart/form-data">
+    	<input id="docx" type="file" onLoad="" name="docx" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+	<br>
+        <input type="button" id="submit" onClick="postFormData();" value="Submit" />
+    </form>
+  </body>
+</html>
