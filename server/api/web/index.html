@@ -3,42 +3,42 @@
     <title>Test page for Docx Splitter</title>
     <script>
       function postFormData() {
-        const fileInput = document.querySelector('#docx');
-        const form = document.querySelector('#form');
-        const formData = new FormData(form);
-        var foo = fileInput.files[0];
-        var fileName = foo.name;
-        formData.append('docx', foo);
-
-        const options = {
-          method: 'POST',
-          body: formData,
-          headers:
+          const fileInput = document.querySelector('#docx');
+          const form = document.querySelector('#form');
+          const formData = new FormData();
+          var foo = fileInput.files[0];
+          var fileName = foo.name;
+          formData.set('docx', foo);
+	  console.log(fileName,fileInput.files.length,foo);
+	  console.log(formData.get("docx"));
+          const options = {
+              method: 'POST',
+              body: formData,
+              headers:
               {
-		'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImNsaWVudElkIjoiNTlhMzM5MmItMGM0Zi00MzE4LWJiZTItZjg2ZWZmNmQzZGU0In0sImlhdCI6MTY0OTQyMTc1NCwiZXhwIjoxNjc4MjIxNzU0fQ.ZJALleUcAyUmPSB_wryNbihSe-KlxByYPbATJm0NFPM',
-        	'Content-Type': 'multipart/form-data',                
-        	'Content-Disposition': "form-data; name='docx'; filename='" + fileName + "'" //                
+		  'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImNsaWVudElkIjoiNTlhMzM5MmItMGM0Zi00MzE4LWJiZTItZjg2ZWZmNmQzZGU0In0sImlhdCI6MTY0OTQyMTc1NCwiZXhwIjoxNjc4MjIxNzU0fQ.ZJALleUcAyUmPSB_wryNbihSe-KlxByYPbATJm0NFPM'
               }
-        };
+          };
 
-        fetch('http://127.0.0.1:3000/api/docxToHTMLSync', options)
-        .then(response => response.json())
-        .then(data => {
-          console.log('Success:', data);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-     }
+          fetch('/api/docxToHTMLSync', options)
+              .then(response => response.json())
+              .then(data => {
+		  console.log('Success:', data);
+		  var iframe = document.querySelector("#xsweet");
+		  iframe.srcdoc = data["html"];
+              })
+              .catch((error) => {
+		  console.error('Error:', error);
+              });
+      }
     </script>
   </head>
   <body>
     <h1>Test page for Docx Splitter</h1>
     <p>Load Docx file for splitting here:</p>
-    <form id="form" enctype="multipart/form-data">
-    	<input id="docx" type="file" onLoad="" name="docx" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-	<br>
-        <input type="button" id="submit" onClick="postFormData();" value="Submit" />
-    </form>
+    <input id="docx" type="file" onLoad="" name="docx" accept=".docx">
+    <br>
+    <input type="button" id="post" onClick="postFormData();" value="OpenFile" />
+    <iframe id="xsweet" width="100%" height="100%" srcdoc="Docx content to load here ..."></iframe>
   </body>
 </html>
