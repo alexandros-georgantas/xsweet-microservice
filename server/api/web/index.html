@@ -1,18 +1,19 @@
 <html>
   <head>
     <title>Test page for Docx Splitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       function postFormData() {
+	  init();
           const fileInput = document.querySelector('#docx');
           const form = document.querySelector('#form');
+	  var iframe = document.querySelector("#xsweet");
           const formData = new FormData();
           var foo = fileInput.files[0];
           var fileName = foo.name;
 	  var key = document.getElementById("key").value;
 	  var authkey = "Basic "  + key
           formData.set('docx', foo);
-	  console.log(fileName,fileInput.files.length,foo);
-	  console.log(formData.get("docx"));
           const options = {
               method: 'POST',
               body: formData,
@@ -26,8 +27,10 @@
               .then(response => response.json())
               .then(data => {
 		  console.log('Success:', data);
-		  var iframe = document.querySelector("#xsweet");
-		  iframe.srcdoc = data["html"];
+		  var html = data["html"];
+		  var N = splitCount(html);
+		  iframe.srcdoc = html;
+		  addSplitList(N);
               })
               .catch((error) => {
 		  console.error('Error:', error);
@@ -53,15 +56,45 @@
 		  console.error('Error:', error);
               });
       }
+      function splitCount(html) {
+	  return html.split(/class=.docx_split_rule./).length - 1;
+      }
+      function addSplitList(n) {
+	  var list = "<ol>";
+	  if(n == 0) {
+	      list = "Oops! We could not automatically split the DocX file;<br> instead the entire file is loaded below as a single document!!"
+	  }
+	  for(var i = 1; i < n+1; i++) {
+	      list += "<li><a style='color:blue; text-decoration:undeline;' onClick='goto_docx_split(" + (i+1) + ")'>Split " + i + "</a></li>";
+	  }
+	  document.querySelector("#splits").innerHTML = list;
+      }
+      function goto_docx_split(k) {
+	  var ifr = document.querySelector("#xsweet");
+	  var doc = (ifr.contentWindow || ifr.contentDocument);
+	  if (doc.document) {
+	      doc = doc.document;
+	  }
+	  var el = doc.querySelector("#docx_split" + k);
+	  el.scrollIntoView();
+      }
+      function init() {
+	  var ifr = document.querySelector("#xsweet");
+	  document.querySelector("#splits").innerHTML = "";
+	  ifr.srcdoc = "<p style='color: grey;'>Please wait ... DocX content to load here</p>";
+      }
     </script>
   </head>
   <body>
     <h1>Test page for Docx Splitter</h1>
     <p>Load Docx file for splitting here:</p>
     <input id="docx" type="file" onLoad="" name="docx" accept=".docx">
-    <br>
-    <button onClick="getAuth();">Get Key</button>: <input type="textbox" id="key" size="100" plaeholder="Paste/Type authorization key here ..."  /><br>
-    <input type="button" id="post" onClick="postFormData();" value="OpenFile" />
-    <iframe id="xsweet" width="100%" height="100%" srcdoc="Docx content to load here ..."></iframe>
+    <br><br>
+    <button onClick="getAuth();">Get Authentication Key</button>: <input type="textbox" id="key" size="100" placeholder="Paste/Type authorization key here ..."  />
+    <br><br>
+    <input type="button" id="post" onClick="postFormData();" value="Run Docx Splitter" />
+    <br><br>
+    <div id="splits"></div>
+    <iframe id="xsweet" width="100%" height="100%" srcdoc="<p style='color: grey;'>Please wait ... DocX content to load here</p>"></iframe>
   </body>
 </html>

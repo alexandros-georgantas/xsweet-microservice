@@ -51,7 +51,7 @@ for DOCi in $SPLITFILES; do
     #Appending everything to HTML5.html
     $TEMP/outputs/HTML5_$N.html >> $TEMP/outputs/HTML5.html
     #Cleaning and merging multi-html for cheerio
-    sed -i "s/<\/body>/<div id='docx_split${N}' class='docx_split_rule'><b class='scissor'>&#x2702;</b></div>/g" $TEMP/outputs/HTML5.html
+    sed -i "s/<\/body>/<div id='docx_split${N}' class='docx_split_rule' style='font-size: 30pt; border-bottom: thick solid black;'><b class='scissor'>&#x2702;</b></div>/g" $TEMP/outputs/HTML5.html
     if [ $? -eq 0 ]
        then
 	   echo "Made HTML5_${N}.html"

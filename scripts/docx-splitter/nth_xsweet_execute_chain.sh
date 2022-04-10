@@ -44,7 +44,7 @@ $saxonHE -threads:5 -xsl:$XMLTOHTML5 -s:$TEMP/outputs/PIPELINED$N.xhtml -o:$TEMP
 #Appending everything to HTML5.html
 cat "${TEMP}/outputs/HTML5_${N}.html" >> $TEMP/outputs/HTML5.html
 #Cleaning merged multi-html for cheerio
-sed -i "s/^<\/body><\/html><[^<>]\+><html[^<>]*>/<div id='docx_split${N}' class='docx_split_rule'><b class='scissor'>\&#x2702;<\/b><\/div>/" $TEMP/outputs/HTML5.html
+sed -i "s/^<\/body><\/html><[^<>]\+><html[^<>]*>/<div id='docx_split${N}' class='docx_split_rule' style='font-size: 30pt; border-bottom: thick solid black;'><b class='scissor'>\&#x2702;<\/b><\/div>/" $TEMP/outputs/HTML5.html
 sed -i '/^[[:space:]]*$/d' $TEMP/outputs/HTML5.html
 
 if [ $? -eq 0 ]
