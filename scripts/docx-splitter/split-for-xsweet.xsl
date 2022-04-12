@@ -19,7 +19,7 @@
   <!-- Output: multiple chapter xml files -->
   <xsl:template match="node()|*|@*|comment()|processing-instruction()">
     <xsl:copy>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="node()|*|@*|comment()|processing-instruction()"/>
     </xsl:copy>
   </xsl:template>
   
