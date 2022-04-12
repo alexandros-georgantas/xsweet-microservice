@@ -41,7 +41,7 @@ else
   exit 1
 fi
 
-$saxonHE -xsl:$DOCXSPLITTER/split-html.xsl -s:$TEMP/outputs/PIPELINED.xhtml -o:$TOC
+$saxonHE -xsl:$DIRECTORY/split-html.xsl -s:$TEMP/outputs/PIPELINED.xhtml -o:$TOC
 SPLITFILES=$(cat $TOC|grep -oP "<div [^<>]+><a href=\"document[0-9]+[.]html\">[^<>]+<"|sed "s/<div [^<>]\+><a href=\"document[0-9]\+[.]html\">//"|tr -d "<")
 N=""
 for DOCi in $SPLITFILES; do
