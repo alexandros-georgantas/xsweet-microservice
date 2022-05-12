@@ -79,7 +79,7 @@ const writeFile = (filePath, data) =>
     })
   })
 
-const queueHandler = async (
+const queueHandlerConvert = async (
   filePath,
   callbackURL,
   serviceCredentialId,
@@ -168,4 +168,101 @@ const queueHandler = async (
   }
 }
 
-module.exports = { uploadHandler, readFile, writeFile, queueHandler }
+const queueHandlerConvertAndSplit = async (
+  filePath,
+  callbackURL,
+  serviceCredentialId,
+  serviceCallbackTokenId,
+  responseToken,
+) => {
+  try {
+    const buf = await readFile(filePath)
+    const { path: tmpDir, cleanup } = await tmp.dir({
+      prefix: '_conversion-',
+      unsafeCleanup: true,
+      dir: process.cwd(),
+    })
+
+    await writeFile(path.join(tmpDir, path.basename(filePath)), buf)
+
+    await new Promise((resolve, reject) => {
+      execFile(
+        'unzip',
+        ['-o', `${tmpDir}/${path.basename(filePath)}`, '-d', tmpDir],
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(error)
+          }
+          resolve(stdout)
+        },
+      )
+    })
+
+    await new Promise((resolve, reject) => {
+      exec(
+        `sh ${path.resolve(
+          __dirname,
+          '..',
+          '..',
+          'scripts',
+          'execute_chain.sh', // what should be executed here
+        )} ${tmpDir}`,
+        (error, stdout, stderr) => {
+          if (error) {
+            reject(error)
+          }
+          resolve(stdout)
+        },
+      )
+    })
+
+    // CHANGES HERE
+
+    // changes here when the chain completes in order to populate the chapters array below
+    // const html = await readFile(
+    //   path.join(tmpDir, 'outputs', 'HTML5.html'),
+    //   'utf8',
+    // )
+    // each chapter's HTML should be passed and cleaned
+    // const cleaned = imageCleaner(html)
+    // const fixed = contentFixer(cleaned)
+    // then should be added in the array
+    // const chapters = []
+
+    await axios({
+      method: 'post',
+      url: `${callbackURL}/api/xsweet`,
+      data: {
+        // chapters
+        serviceCredentialId,
+        serviceCallbackTokenId,
+        responseToken,
+      },
+    })
+
+    await cleanup()
+    await fs.remove(filePath)
+    return true
+  } catch (e) {
+    await fs.remove(filePath)
+    return axios({
+      method: 'post',
+      url: `${callbackURL}/api/xsweet`,
+      data: {
+        convertedContent: undefined,
+        error: e,
+        serviceCredentialId,
+        serviceCallbackTokenId,
+        responseToken,
+      },
+    })
+  }
+}
+
+module.exports = {
+  uploadHandler,
+  readFile,
+  writeFile,
+  queueHandlerConvert,
+  queueHandlerConvertAndSplit,
+}

@@ -1,5 +1,8 @@
 const { startServer, boss } = require('@coko/server')
-const { queueHandler } = require('./api/helpers')
+const {
+  queueHandlerConvert,
+  queueHandlerConvertAndSplit,
+} = require('./api/helpers')
 
 const init = async () => {
   startServer().then(async () => {
@@ -14,12 +17,31 @@ const init = async () => {
         bookComponentId,
         responseToken,
       } = data
-      return queueHandler(
+      return queueHandlerConvert(
         filePath,
         callbackURL,
         serviceCredentialId,
         serviceCallbackTokenId,
         bookComponentId,
+        responseToken,
+      )
+    })
+
+    boss.subscribe('xsweet-convert-and-split', async job => {
+      const { data } = job
+
+      const {
+        filePath,
+        callbackURL,
+        serviceCredentialId,
+        serviceCallbackTokenId,
+        responseToken,
+      } = data
+      return queueHandlerConvertAndSplit(
+        filePath,
+        callbackURL,
+        serviceCredentialId,
+        serviceCallbackTokenId,
         responseToken,
       )
     })

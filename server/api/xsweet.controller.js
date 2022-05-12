@@ -38,8 +38,42 @@ const docxToHTML = async (req, res) => {
   }
 }
 
+const convertAndSplit = async (req, res) => {
+  try {
+    if (req.fileValidationError) {
+      return res.status(400).json({ msg: req.fileValidationError })
+    }
+    if (!req.file) {
+      return res.status(400).json({ msg: 'docx file is not included' })
+    }
+
+    const {
+      serviceCredentialId,
+      serviceCallbackTokenId,
+      responseToken,
+      callbackURL,
+    } = req.body
+    const { path: filePath } = req.file
+
+    await boss.publish('xsweet-convert-and-split', {
+      filePath,
+      callbackURL,
+      serviceCredentialId,
+      serviceCallbackTokenId,
+      responseToken,
+    })
+
+    return res.status(200).json({
+      msg: 'ok',
+    })
+  } catch (e) {
+    return res.status(500).json({ msg: e.toString() })
+  }
+}
+
 const xSweetServiceBackend = app => {
   app.post('/api/docxToHTML', authenticate, uploadHandler, docxToHTML)
+  app.post('/api/convertAndSplit', authenticate, uploadHandler, convertAndSplit)
 }
 
 module.exports = xSweetServiceBackend
