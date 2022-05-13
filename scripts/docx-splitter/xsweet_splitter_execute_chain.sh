@@ -32,7 +32,7 @@ done
 #If unsplit go to default 
 if echo $N|grep -q '^[0-9]';
 then
-    echo "splitting ..."
+    zip -r  $DOCXMLDIR/outputs/mDoc.zip $DOCXMLDIR
 else
     $DIRECTORY/../execute_chain.sh "${DOCXMLDIR}"
 fi
