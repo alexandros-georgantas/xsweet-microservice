@@ -205,7 +205,8 @@ const queueHandlerConvertAndSplit = async (
           '..',
           '..',
           'scripts',
-          'execute_chain.sh', // what should be executed here
+          'docx-splitter',
+          'xsweet_splitter_execute_chain.sh', // or editoria_splitter_execute_chain.sh
         )} ${tmpDir}`,
         (error, stdout, stderr) => {
           if (error) {
@@ -219,21 +220,24 @@ const queueHandlerConvertAndSplit = async (
     // CHANGES HERE
 
     // changes here when the chain completes in order to populate the chapters array below
-    // const html = await readFile(
-    //   path.join(tmpDir, 'outputs', 'HTML5.html'),
-    //   'utf8',
-    // )
-    // each chapter's HTML should be passed and cleaned
-    // const cleaned = imageCleaner(html)
-    // const fixed = contentFixer(cleaned)
-    // then should be added in the array
-    // const chapters = []
+    const html = await readFile(
+       path.join(tmpDir, 'outputs', 'HTML5.html'),
+      'utf8',
+    )
+    const $ = cheerio.load(html)      
+    const chapters = []
+    $('container').each((i, chtml) => {
+       // Each chapter's HTML should be passed and cleaned
+       const ccl = imageCleaner(chtml)
+       const cfx = contentFixer(ccl)
+       chapters.push(cfx)
+    })
 
     await axios({
       method: 'post',
       url: `${callbackURL}/api/xsweet`,
       data: {
-        // chapters
+        chapters,
         serviceCredentialId,
         serviceCallbackTokenId,
         responseToken,
