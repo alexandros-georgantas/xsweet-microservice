@@ -126,10 +126,14 @@ const conversionHandler = async filePath => {
     path.join(tmpDir, 'outputs', 'HTML5.html'),
     'utf8',
   )
+  const mdocx = await readFile(
+    path.join(tmpDir, 'outputs', 'mDoc.zip'),
+    null,
+  )
 
   const cleaned = imageCleaner(html)
   const fixed = contentFixer(cleaned)
-  return fixed
+    return {fixed,mdocx}
 }
 
 const queueHandler = async (

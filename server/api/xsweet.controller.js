@@ -57,10 +57,11 @@ const docxToHTMLSync = async (req, res) => {
     } = req.body
     const { path: filePath } = req.file
 
-    const htmlContent = await conversionHandler(filePath)
+      const {no, htmlContent, mdocx}  = await conversionHandler(filePath)
 
     return res.status(200).json({
       html: htmlContent,
+      mzip: mdocx
     })
   } catch (e) {
     return res.status(500).json({ msg: e.toString() })
