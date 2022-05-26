@@ -1,11 +1,18 @@
 const { startServer, boss } = require('@coko/server')
-const { convertHandler, queueHandlerConvertAndSplit } = require('./api/helpers')
+const {
+  DOCXToHTMLAsyncHandler,
+  DOCXToHTMLAndSplitAsyncHandler,
+} = require('./api/useCase')
+
+const {
+  DOCX_TO_HTML_AND_SPLIT_JOB,
+  DOCX_TO_HTML_JOB,
+} = require('./api/constants')
 
 const init = async () => {
   startServer().then(async () => {
-    boss.subscribe('xsweet-conversion', async job => {
+    boss.subscribe(DOCX_TO_HTML_JOB, async job => {
       const { data } = job
-
       const {
         filePath,
         callbackURL,
@@ -14,18 +21,19 @@ const init = async () => {
         bookComponentId,
         responseToken,
       } = data
-      return convertHandler(
-        filePath,
+
+      const responseParams = {
         callbackURL,
         serviceCredentialId,
         serviceCallbackTokenId,
         bookComponentId,
         responseToken,
-        true,
-      )
+      }
+
+      return DOCXToHTMLAsyncHandler(filePath, responseParams)
     })
 
-    boss.subscribe('xsweet-convert-and-split', async job => {
+    boss.subscribe(DOCX_TO_HTML_AND_SPLIT_JOB, async job => {
       const { data } = job
 
       const {
@@ -35,13 +43,14 @@ const init = async () => {
         serviceCallbackTokenId,
         responseToken,
       } = data
-      return queueHandlerConvertAndSplit(
-        filePath,
+
+      const responseParams = {
         callbackURL,
         serviceCredentialId,
         serviceCallbackTokenId,
         responseToken,
-      )
+      }
+      return DOCXToHTMLAndSplitAsyncHandler(filePath, responseParams)
     })
   })
 }
