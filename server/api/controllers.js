@@ -1,10 +1,14 @@
-const { boss } = require('@coko/server')
-
+const fs = require('fs-extra')
+const { boss, logger } = require('@coko/server')
 const {
   DOCXToHTMLSyncHandler,
   DOCXToHTMLAndSplitSyncHandler,
 } = require('./useCase')
-const { DOCX_TO_HTML_AND_SPLIT_JOB, DOCX_TO_HTML_JOB } = require('./constants')
+const {
+  DOCX_TO_HTML_AND_SPLIT_JOB,
+  DOCX_TO_HTML_JOB,
+  MICROSERVICE_NAME,
+} = require('./constants')
 
 const DOCXToHTMLAsyncController = async (req, res) => {
   try {
@@ -18,27 +22,48 @@ const DOCXToHTMLAsyncController = async (req, res) => {
     const {
       serviceCredentialId,
       serviceCallbackTokenId,
-      bookComponentId,
+      objectId,
       responseToken,
       callbackURL,
     } = req.body
-    const { path: filePath } = req.file
 
+    if (!serviceCredentialId) {
+      throw new Error(`request's parameter serviceCredentialId is required`)
+    }
+    if (!serviceCallbackTokenId) {
+      throw new Error(`request's parameter serviceCallbackTokenId is required`)
+    }
+    if (!objectId) {
+      throw new Error(`request's parameter objectId is required`)
+    }
+    if (!responseToken) {
+      throw new Error(`request's parameter responseToken is required`)
+    }
+    if (!callbackURL) {
+      throw new Error(`request's parameter callbackURL is required`)
+    }
+
+    const { path: filePath } = req.file
+    logger.info(
+      `${MICROSERVICE_NAME} controller(DOCXToHTMLAsyncController): publishes a job to the ${DOCX_TO_HTML_JOB} queue`,
+    )
     await boss.publish(DOCX_TO_HTML_JOB, {
       filePath,
       callbackURL,
       serviceCredentialId,
       serviceCallbackTokenId,
-      bookComponentId,
+      objectId,
       responseToken,
     })
 
     return res.status(200).json({
       msg: 'ok',
-      error: undefined,
+      error: null,
     })
   } catch (e) {
-    return res.status(500).json({ error: e.toString(), msg: undefined })
+    const { path: filePath } = req.file
+    await fs.remove(filePath)
+    return res.status(500).json({ error: e.toString(), msg: null })
   }
 }
 
@@ -53,14 +78,18 @@ const DOCXToHTMLSyncController = async (req, res) => {
 
     const { path: filePath } = req.file
 
+    logger.info(
+      `${MICROSERVICE_NAME} controller(DOCXToHTMLSyncController): executes DOCXToHTMLSyncHandler`,
+    )
+
     const htmlContent = await DOCXToHTMLSyncHandler(filePath)
 
     return res.status(200).json({
       html: htmlContent,
-      error: undefined,
+      error: null,
     })
   } catch (e) {
-    return res.status(500).json({ html: undefined, error: e.toString() })
+    return res.status(500).json({ html: null, error: e.toString() })
   }
 }
 
@@ -79,7 +108,25 @@ const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
       responseToken,
       callbackURL,
     } = req.body
+
+    if (!serviceCredentialId) {
+      throw new Error(`request's parameter serviceCredentialId is required`)
+    }
+    if (!serviceCallbackTokenId) {
+      throw new Error(`request's parameter serviceCallbackTokenId is required`)
+    }
+
+    if (!responseToken) {
+      throw new Error(`request's parameter responseToken is required`)
+    }
+    if (!callbackURL) {
+      throw new Error(`request's parameter callbackURL is required`)
+    }
+
     const { path: filePath } = req.file
+    logger.info(
+      `${MICROSERVICE_NAME} controller(DOCXToHTMLAndSplitAsyncController): publishes a job to the ${DOCX_TO_HTML_AND_SPLIT_JOB} queue`,
+    )
 
     await boss.publish(DOCX_TO_HTML_AND_SPLIT_JOB, {
       filePath,
@@ -91,10 +138,12 @@ const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
 
     return res.status(200).json({
       msg: 'ok',
-      error: undefined,
+      error: null,
     })
   } catch (e) {
-    return res.status(500).json({ error: e.toString(), msg: undefined })
+    const { path: filePath } = req.file
+    await fs.remove(filePath)
+    return res.status(500).json({ error: e.toString(), msg: null })
   }
 }
 
@@ -108,11 +157,15 @@ const DOCXToHTMLAndSplitSyncController = async (req, res) => {
     }
 
     const { path: filePath } = req.file
+    logger.info(
+      `${MICROSERVICE_NAME} controller(DOCXToHTMLAndSplitSyncController): executes DOCXToHTMLAndSplitSyncHandler`,
+    )
+
     const chapters = await DOCXToHTMLAndSplitSyncHandler(filePath)
 
     return res.status(200).json({
       chapters,
-      error: undefined,
+      error: null,
     })
   } catch (e) {
     return res.status(500).json({ chapters: [], error: e.toString() })

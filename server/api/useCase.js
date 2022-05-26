@@ -1,10 +1,11 @@
+const { logger } = require('@coko/server')
 const tmp = require('tmp-promise')
 const fs = require('fs-extra')
 const cheerio = require('cheerio')
 const { exec, execFile } = require('child_process')
 const axios = require('axios')
 const path = require('path')
-
+const { MICROSERVICE_NAME } = require('./constants')
 const { readFile, writeFile, imageCleaner, contentFixer } = require('./helpers')
 
 const DOCXToHTMLSyncHandler = async filePath => {
@@ -20,6 +21,9 @@ const DOCXToHTMLSyncHandler = async filePath => {
     const buf = await readFile(filePath)
 
     await writeFile(path.join(tmpDir, path.basename(filePath)), buf)
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): extracts docx's components`,
+    )
 
     await new Promise((resolve, reject) => {
       execFile(
@@ -33,7 +37,9 @@ const DOCXToHTMLSyncHandler = async filePath => {
         },
       )
     })
-
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): executes execute_chain.sh script`,
+    )
     await new Promise((resolve, reject) => {
       exec(
         `sh ${path.resolve(
@@ -51,12 +57,16 @@ const DOCXToHTMLSyncHandler = async filePath => {
         },
       )
     })
-
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): reads produces HTML file`,
+    )
     const html = await readFile(
       path.join(tmpDir, 'outputs', 'HTML5.html'),
       'utf8',
     )
-
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): cleans HTML file from images and unnecessary attributes`,
+    )
     const cleanedFromImages = imageCleaner(html)
     const fixedContent = contentFixer(cleanedFromImages)
 
@@ -68,6 +78,9 @@ const DOCXToHTMLSyncHandler = async filePath => {
       await cleaner()
     }
     await fs.remove(filePath)
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): removes tmp folders and docx file`,
+    )
   }
 }
 
@@ -81,6 +94,10 @@ const DOCXToHTMLAsyncHandler = async (filepath, responseParams) => {
   } = responseParams
   try {
     const html = await DOCXToHTMLSyncHandler(filepath)
+
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): returns the converted file back to its caller`,
+    )
 
     return axios({
       method: 'post',
@@ -122,7 +139,9 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
     })
     cleaner = cleanup
     await writeFile(path.join(tmpDir, path.basename(filePath)), buf)
-
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAndSplitSyncHandler): extracts docx's components`,
+    )
     await new Promise((resolve, reject) => {
       execFile(
         'unzip',
@@ -135,6 +154,10 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
         },
       )
     })
+
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAndSplitSyncHandler): executes xsweet_splitter_execute_chain.sh script`,
+    )
 
     await new Promise((resolve, reject) => {
       exec(
@@ -159,6 +182,7 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
       path.join(tmpDir, 'outputs', 'HTML5.html'),
       'utf8',
     )
+
     const $ = cheerio.load(html)
     const chapters = []
     $('container').each((i, element) => {
@@ -187,6 +211,10 @@ const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
   } = responseParams
   try {
     const chapters = await DOCXToHTMLAndSplitSyncHandler(filePath)
+
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAndSplitAsyncHandler): returns the converted file back to its caller`,
+    )
     return axios({
       method: 'post',
       url: `${callbackURL}/api/xsweet`,
