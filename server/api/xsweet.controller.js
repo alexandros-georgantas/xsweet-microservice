@@ -3,7 +3,7 @@ const { authenticate } = require('@coko/service-auth')
 
 const { uploadHandler } = require('./helpers')
 
-const docxToHTML = async (req, res) => {
+const docxToHTMLAsyncHandler = async (req, res) => {
   try {
     if (req.fileValidationError) {
       return res.status(400).json({ msg: req.fileValidationError })
@@ -38,7 +38,7 @@ const docxToHTML = async (req, res) => {
   }
 }
 
-const convertAndSplit = async (req, res) => {
+const convertAndSplitAsyncHandler = async (req, res) => {
   try {
     if (req.fileValidationError) {
       return res.status(400).json({ msg: req.fileValidationError })
@@ -72,8 +72,25 @@ const convertAndSplit = async (req, res) => {
 }
 
 const xSweetServiceBackend = app => {
-  app.post('/api/docxToHTML', authenticate, uploadHandler, docxToHTML)
-  app.post('/api/convertAndSplit', authenticate, uploadHandler, convertAndSplit)
+  app.post(
+    '/api/v1/async/docxToHTML',
+    authenticate,
+    uploadHandler,
+    docxToHTMLAsyncHandler,
+  )
+  app.post(
+    '/api/v1/async/convertAndSplit',
+    authenticate,
+    uploadHandler,
+    convertAndSplitAsyncHandler,
+  )
+  app.post('/api/v1/sync/docxToHTML', authenticate, uploadHandler, docxToHTML)
+  app.post(
+    '/api/v1/sync/convertAndSplit',
+    authenticate,
+    uploadHandler,
+    convertAndSplit,
+  )
 }
 
 module.exports = xSweetServiceBackend

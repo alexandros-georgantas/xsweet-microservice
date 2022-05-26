@@ -1,8 +1,5 @@
 const { startServer, boss } = require('@coko/server')
-const {
-  queueHandlerConvert,
-  queueHandlerConvertAndSplit,
-} = require('./api/helpers')
+const { convertHandler, queueHandlerConvertAndSplit } = require('./api/helpers')
 
 const init = async () => {
   startServer().then(async () => {
@@ -17,13 +14,14 @@ const init = async () => {
         bookComponentId,
         responseToken,
       } = data
-      return queueHandlerConvert(
+      return convertHandler(
         filePath,
         callbackURL,
         serviceCredentialId,
         serviceCallbackTokenId,
         bookComponentId,
         responseToken,
+        true,
       )
     })
 

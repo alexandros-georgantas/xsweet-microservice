@@ -75,17 +75,18 @@ const writeFile = (filePath, data) =>
       if (err) {
         return reject(err)
       }
-      resolve(true)
+      return resolve(true)
     })
   })
 
-const queueHandlerConvert = async (
+const convertHandler = async (
   filePath,
   callbackURL,
   serviceCredentialId,
   serviceCallbackTokenId,
   bookComponentId,
   responseToken,
+  async,
 ) => {
   try {
     const buf = await readFile(filePath)
@@ -136,44 +137,52 @@ const queueHandlerConvert = async (
     const cleaned = imageCleaner(html)
     const fixed = contentFixer(cleaned)
 
-    await axios({
-      method: 'post',
-      url: `${callbackURL}/api/xsweet`,
-      data: {
-        convertedContent: fixed,
-        serviceCredentialId,
-        serviceCallbackTokenId,
-        bookComponentId,
-        responseToken,
-      },
-    })
-
     await cleanup()
     await fs.remove(filePath)
-    return true
+
+    if (async) {
+      return axios({
+        method: 'post',
+        url: `${callbackURL}/api/xsweet`,
+        data: {
+          convertedContent: fixed,
+          error: undefined,
+          serviceCredentialId,
+          serviceCallbackTokenId,
+          bookComponentId,
+          responseToken,
+        },
+      })
+    }
+
+    return fixed
   } catch (e) {
     await fs.remove(filePath)
-    return axios({
-      method: 'post',
-      url: `${callbackURL}/api/xsweet`,
-      data: {
-        convertedContent: undefined,
-        error: e,
-        serviceCredentialId,
-        serviceCallbackTokenId,
-        bookComponentId,
-        responseToken,
-      },
-    })
+    if (async) {
+      return axios({
+        method: 'post',
+        url: `${callbackURL}/api/xsweet`,
+        data: {
+          convertedContent: undefined,
+          error: e,
+          serviceCredentialId,
+          serviceCallbackTokenId,
+          bookComponentId,
+          responseToken,
+        },
+      })
+    }
+    return e
   }
 }
 
-const queueHandlerConvertAndSplit = async (
+const convertAndSplitHandler = async (
   filePath,
   callbackURL,
   serviceCredentialId,
   serviceCallbackTokenId,
   responseToken,
+  async,
 ) => {
   try {
     const buf = await readFile(filePath)
@@ -229,33 +238,39 @@ const queueHandlerConvertAndSplit = async (
     // then should be added in the array
     // const chapters = []
 
-    await axios({
-      method: 'post',
-      url: `${callbackURL}/api/xsweet`,
-      data: {
-        // chapters
-        serviceCredentialId,
-        serviceCallbackTokenId,
-        responseToken,
-      },
-    })
-
     await cleanup()
     await fs.remove(filePath)
+
+    if (async) {
+      return axios({
+        method: 'post',
+        url: `${callbackURL}/api/xsweet`,
+        data: {
+          // chapters,
+          error: undefined,
+          serviceCredentialId,
+          serviceCallbackTokenId,
+          responseToken,
+        },
+      })
+    }
     return true
   } catch (e) {
     await fs.remove(filePath)
-    return axios({
-      method: 'post',
-      url: `${callbackURL}/api/xsweet`,
-      data: {
-        convertedContent: undefined,
-        error: e,
-        serviceCredentialId,
-        serviceCallbackTokenId,
-        responseToken,
-      },
-    })
+    if (async) {
+      return axios({
+        method: 'post',
+        url: `${callbackURL}/api/xsweet`,
+        data: {
+          convertedContent: undefined,
+          error: e,
+          serviceCredentialId,
+          serviceCallbackTokenId,
+          responseToken,
+        },
+      })
+    }
+    return e
   }
 }
 
@@ -263,6 +278,6 @@ module.exports = {
   uploadHandler,
   readFile,
   writeFile,
-  queueHandlerConvert,
-  queueHandlerConvertAndSplit,
+  convertHandler,
+  convertAndSplitHandler,
 }
