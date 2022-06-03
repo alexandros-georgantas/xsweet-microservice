@@ -186,7 +186,7 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
     const $ = cheerio.load(html)
     const chapters = []
     $('container').each((i, element) => {
-      const chtml = $(element).html()	  
+      const chtml = "<container id='main'>" + $(element).html() + "</container>"	  
       const cleanedFromImages = imageCleaner(chtml)
       const fixedContent = contentFixer(cleanedFromImages)
       chapters.push(fixedContent)
