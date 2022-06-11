@@ -29,8 +29,7 @@ PIPELINE="${XSWEET}/applications/PIPELINE.xsl"                       # "Extracti
 XMLTOHTML5="${XSWEET}/applications/html-polish/html5-serialize.xsl"
 
 
-$saxonHE -threads:10 -xsl:$PIPELINE -s:$TEMP/word/document.xml -o:$TEMP/outputs/PIPELINED.xhtml
-
+$saxonHE -threads:10 -xsl:$PIPELINE skip='ucp-text-macros' -s:$TEMP/word/document.xml -o:$TEMP/outputs/PIPELINED.xhtml 
 if [ $? -eq 0 ]
 then
   echo "Made PIPELINED.xhtml"
