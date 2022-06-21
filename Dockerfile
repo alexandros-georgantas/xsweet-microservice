@@ -4,7 +4,7 @@ RUN apk update && apk add --no-cache unzip bash openjdk11-jre-headless git coreu
 
 WORKDIR /home/node/xsweet
 # Download XSweet
-RUN wget https://gitlab.coko.foundation/XSweet/XSweet/-/archive/wax2/XSweet-wax2.zip -O xsweet.zip; unzip xsweet.zip; rm xsweet.zip
+RUN wget https://gitlab.coko.foundation/XSweet/XSweet/-/archive/livriz/XSweet-wax2.zip -O xsweet.zip; unzip xsweet.zip; rm xsweet.zip
 RUN wget https://gitlab.coko.foundation/XSweet/editoria_typescript/-/archive/wax2/editoria_typescript-wax2.zip -O typescript.zip; unzip typescript.zip; rm typescript.zip
 RUN wget https://gitlab.coko.foundation/XSweet/HTMLevator/-/archive/wax2/HTMLevator-wax2.zip -O htmlevator.zip; unzip htmlevator.zip; rm htmlevator.zip
 
