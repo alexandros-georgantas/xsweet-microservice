@@ -33,7 +33,7 @@ done
 if echo $N|grep -q '^[0-9]';
 then
     cd $DOCXMLDIR
-    zip -r outputs/mDoc.zip *
+    # zip -r outputs/mDoc.zip *
 else
     $DIRECTORY/../execute_chain.sh "${DOCXMLDIR}"
 fi

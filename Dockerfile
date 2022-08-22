@@ -24,6 +24,8 @@ COPY --chown=node:node . .
 
 RUN chmod +x ./scripts/move_xslts.sh
 RUN chmod +x ./scripts/execute_chain.sh
+RUN chmod +x ./scripts/docx-splitter/xsweet_splitter_execute_chain.sh
+RUN chmod +x ./scripts/docx-splitter/nth_xsweet_execute_chain.sh
 RUN ./scripts/move_xslts.sh
 
 ENTRYPOINT ["sh", "./scripts/setupProdServer.sh"]
