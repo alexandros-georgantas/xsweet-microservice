@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test page for XSweet-Wax2 branch</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      #key,#splits { display: none; }
+      /**
+       * ==============================================
+       * Dot Windmill
+       * ==============================================
+       */
+      .dot-windmill {
+	  position: relative;
+	  top: -10px;
+	  width: 10px;
+	  height: 10px;
+	  border-radius: 5px;
+	  background-color: #9880ff;
+	  color: #9880ff;
+	  transform-origin: 5px 15px;
+	  -webkit-animation: dot-windmill 2s infinite linear;
+	  animation: dot-windmill 2s infinite linear;
+      }
+      .dot-windmill::before, .dot-windmill::after {
+	  content: "";
+	  display: inline-block;
+	  position: absolute;
+      }
+      .dot-windmill::before {
+	  left: -8.66254px;
+	  top: 15px;
+	  width: 10px;
+	  height: 10px;
+	  border-radius: 5px;
+	  background-color: #9880ff;
+	  color: #9880ff;
+      }
+      .dot-windmill::after {
+	  left: 8.66254px;
+	  top: 15px;
+	  width: 10px;
+	  height: 10px;
+	  border-radius: 5px;
+	  background-color: #9880ff;
+	  color: #9880ff;
+      }
+
+      @-webkit-keyframes dot-windmill {
+	  0% {
+	      transform: rotateZ(0deg) translate3d(0, 0, 0);
+	  }
+	  100% {
+	      transform: rotateZ(720deg) translate3d(0, 0, 0);
+	  }
+      }
+
+      @keyframes dot-windmill {
+	  0% {
+	      transform: rotateZ(0deg) translate3d(0, 0, 0);
+	  }
+	  100% {
+	      transform: rotateZ(720deg) translate3d(0, 0, 0);
+	  }
+      }
+    </style>
+    <script>
+      function postFormData(key) {
+          const fileInput = document.querySelector('#docx');
+          const form = document.querySelector('#form');
+	  var iframe = document.querySelector("#xsweet");
+          const formData = new FormData();
+          var foo = fileInput.files[0];
+          var fileName = foo.name;
+          formData.set('docx', foo);
+	  var key = document.getElementById("key").value;
+	  var authkey = "Basic "  + key
+          const options_html = {
+              method: 'POST',
+              body: formData,
+              headers:
+              {
+		  'Authorization': authkey
+              }
+          };
+          fetch('/api/docxToHTMLSync', options_html)
+              .then(response => response.json())
+              .then(data => {
+		  console.log('Success:', data);
+		  var html = data["html"];
+		  var mdocx = data["mzip"];
+		  var N = splitCount(html);
+		  iframe.innerHTML = html;
+		  addSplitList(N);
+              })
+              .catch((error) => {
+		  console.error('Error:', error);
+              });
+      }
+      function splitDoc() {
+	  const user = "59a3392b-0c4f-4318-bbe2-f86eff6d3de4";
+	  const pwd = "asldkjLKJLaslkdf897kjhKUJH";	  
+	  var authkey = "Basic " +  btoa(user + ":" + pwd);
+          const options = {
+              method: 'POST',
+              headers:
+              {
+		  'Authorization': authkey
+              }
+          };
+	  init();
+          fetch('/api/auth', options)
+              .then(response => response.json())
+              .then(data => {
+		  console.log('Success:', data);
+		  var key = data["accessToken"];
+                  document.querySelector("#key").value = key; 
+		  postFormData(key);
+              })
+              .catch((error) => {
+		  console.error('Error:', error);
+              });
+      }
+      function splitCount(html) {
+	  return html.split(/class=.docx_split_rule./).length - 1;
+      }
+      function addSplitList(n) {
+	  var list = "<ol>";
+	  if(n == 0) {
+	      list = "Oops! We could not automatically split the DocX file;<br> instead the entire file is loaded below as a single document!!"
+	  }
+	  for(var i = 1; i < n+1; i++) {
+	      list += "<li><a href='#docx_split" + (i+1) + "'>Split " + i + "</a></li>";
+	  }
+	  document.querySelector("#splits").innerHTML = list;
+      }
+      function init() {
+	  var ifr = document.querySelector("#xsweet");
+	  document.querySelector("#splits").innerHTML = "";
+	  ifr.innerHTML = "<p style='color: grey;'>Please wait ... DocX content to load here</p><div class='dot-windmill'></div>";
+      }
+      </script>
+  </head>
+  <body>
+    <h1>Test page for XSweet-wax2 branch</h1>
+    <p>Load DocX file here:</p>
+    <input id="docx" type="file" onLoad="" name="docx" accept=".docx">
+    <br>
+    <input type="textbox" id="key" size="100" placeholder="Paste/Type authorization key here ..."  />
+    <br><br>
+    <input type="button" id="post" onClick="splitDoc();" value="Run Docx Splitter" />
+    <br><br>
+    <div id="splits"></div>
+    <div id="xsweet"></div>
+  </body>
+</html>
