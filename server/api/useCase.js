@@ -192,9 +192,9 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
     const $ = cheerio.load(html)
     const chapters = []
     $('container').each((i, element) => {
-      const $elem = $(element).html()
-      const content = imagesHandler($elem)
-
+      // const $elem = $(element).html()
+      const chtml = `<container id='main'>${$(element).html()}</container>`
+      const content = imagesHandler(chtml)
       chapters.push(content)
     })
 
