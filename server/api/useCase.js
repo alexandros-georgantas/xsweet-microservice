@@ -6,7 +6,12 @@ const { exec, execFile } = require('child_process')
 const axios = require('axios')
 const path = require('path')
 const { MICROSERVICE_NAME } = require('./constants')
-const { readFile, writeFile, imageCleaner, contentFixer } = require('./helpers')
+const {
+  readFile,
+  writeFile,
+  imagesHandler,
+  contentFixer,
+} = require('./helpers')
 
 const DOCXToHTMLSyncHandler = async filePath => {
   let cleaner
@@ -67,7 +72,8 @@ const DOCXToHTMLSyncHandler = async filePath => {
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): cleans HTML file from images and unnecessary attributes`,
     )
-    const cleanedFromImages = imageCleaner(html)
+
+    const cleanedFromImages = imagesHandler(html)
     const fixedContent = contentFixer(cleanedFromImages)
 
     return fixedContent
@@ -84,7 +90,7 @@ const DOCXToHTMLSyncHandler = async filePath => {
   }
 }
 
-const DOCXToHTMLAsyncHandler = async (filepath, responseParams) => {
+const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
   const {
     callbackURL,
     serviceCredentialId,
@@ -93,7 +99,7 @@ const DOCXToHTMLAsyncHandler = async (filepath, responseParams) => {
     responseToken,
   } = responseParams
   try {
-    const html = await DOCXToHTMLSyncHandler(filepath)
+    const html = await DOCXToHTMLSyncHandler(filePath)
 
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): returns the converted file back to its caller`,
@@ -101,7 +107,7 @@ const DOCXToHTMLAsyncHandler = async (filepath, responseParams) => {
 
     return axios({
       method: 'post',
-      url: `${callbackURL}/api/xsweet`,
+      url: callbackURL,
       data: {
         convertedContent: html,
         error: undefined,
@@ -114,7 +120,7 @@ const DOCXToHTMLAsyncHandler = async (filepath, responseParams) => {
   } catch (e) {
     return axios({
       method: 'post',
-      url: `${callbackURL}/api/xsweet`,
+      url: callbackURL,
       data: {
         convertedContent: undefined,
         error: e,
@@ -186,9 +192,10 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
     const $ = cheerio.load(html)
     const chapters = []
     $('container').each((i, element) => {
-      const cleanedFromImages = imageCleaner(element)
-      const fixedContent = contentFixer(cleanedFromImages)
-      chapters.push(fixedContent)
+      const $elem = $(element).html()
+      const content = imagesHandler($elem)
+
+      chapters.push(content)
     })
 
     return chapters
@@ -217,7 +224,7 @@ const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
     )
     return axios({
       method: 'post',
-      url: `${callbackURL}/api/xsweet`,
+      url: callbackURL,
       data: {
         chapters,
         error: undefined,
@@ -229,7 +236,7 @@ const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
   } catch (e) {
     return axios({
       method: 'post',
-      url: `${callbackURL}/api/xsweet`,
+      url: callbackURL,
       data: {
         convertedContent: undefined,
         error: e,

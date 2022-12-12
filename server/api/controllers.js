@@ -63,7 +63,7 @@ const DOCXToHTMLAsyncController = async (req, res) => {
   } catch (e) {
     const { path: filePath } = req.file
     await fs.remove(filePath)
-    return res.status(500).json({ error: e.toString(), msg: null })
+    return res.status(500).json({ error: e.message, msg: null })
   }
 }
 
@@ -89,7 +89,7 @@ const DOCXToHTMLSyncController = async (req, res) => {
       error: null,
     })
   } catch (e) {
-    return res.status(500).json({ html: null, error: e.toString() })
+    return res.status(500).json({ html: null, error: e.message })
   }
 }
 
@@ -143,7 +143,7 @@ const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
   } catch (e) {
     const { path: filePath } = req.file
     await fs.remove(filePath)
-    return res.status(500).json({ error: e.toString(), msg: null })
+    return res.status(500).json({ error: e.message, msg: null })
   }
 }
 
@@ -168,7 +168,7 @@ const DOCXToHTMLAndSplitSyncController = async (req, res) => {
       error: null,
     })
   } catch (e) {
-    return res.status(500).json({ chapters: [], error: e.toString() })
+    return res.status(500).json({ chapters: [], error: e.message })
   }
 }
 

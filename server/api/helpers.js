@@ -12,6 +12,32 @@ const imageCleaner = html => {
   return $.html()
 }
 
+// encode file to base64
+const base64EncodeFile = filePath =>
+  fs.readFileSync(filePath).toString('base64')
+
+const imagesHandler = html => {
+  const $ = cheerio.load(html)
+  $('img[src]').each((i, elem) => {
+    const $elem = $(elem)
+    if ($elem.attr('src').includes('file:')) {
+      let filePath = $elem.attr('src').split(':')[1].replace(/\/\//, '/')
+
+      if (!fs.existsSync(filePath)) {
+        filePath = $elem.attr('src').split(':')[1].replace('word', '')
+        filePath.replace(/\/\//, '/')
+      }
+      const ext = filePath.slice(filePath.lastIndexOf('.') + 1, filePath.length)
+      $elem.attr(
+        'src',
+        `data:image/${ext};base64,${base64EncodeFile(filePath)}`,
+      )
+    }
+  })
+
+  return $.html()
+}
+
 const contentFixer = html => {
   const $ = cheerio.load(html)
   $('p').each((i, elem) => {
@@ -81,5 +107,6 @@ module.exports = {
   readFile,
   writeFile,
   imageCleaner,
+  imagesHandler,
   contentFixer,
 }
