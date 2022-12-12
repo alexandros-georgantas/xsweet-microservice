@@ -1,10 +1,7 @@
 const multer = require('multer')
 const path = require('path')
-const tmp = require('tmp-promise')
 const fs = require('fs-extra')
 const cheerio = require('cheerio')
-const { exec, execFile } = require('child_process')
-const axios = require('axios')
 
 const imageCleaner = html => {
   const $ = cheerio.load(html)
@@ -12,6 +9,32 @@ const imageCleaner = html => {
     const $elem = $(elem)
     $elem.remove()
   })
+  return $.html()
+}
+
+// encode file to base64
+const base64EncodeFile = filePath =>
+  fs.readFileSync(filePath).toString('base64')
+
+const imagesHandler = html => {
+  const $ = cheerio.load(html)
+  $('img[src]').each((i, elem) => {
+    const $elem = $(elem)
+    if ($elem.attr('src').includes('file:')) {
+      let filePath = $elem.attr('src').split(':')[1].replace(/\/\//, '/')
+
+      if (!fs.existsSync(filePath)) {
+        filePath = $elem.attr('src').split(':')[1].replace('word', '')
+        filePath.replace(/\/\//, '/')
+      }
+      const ext = filePath.slice(filePath.lastIndexOf('.') + 1, filePath.length)
+      $elem.attr(
+        'src',
+        `data:image/${ext};base64,${base64EncodeFile(filePath)}`,
+      )
+    }
+  })
+
   return $.html()
 }
 
@@ -75,97 +98,15 @@ const writeFile = (filePath, data) =>
       if (err) {
         return reject(err)
       }
-      resolve(true)
+      return resolve(true)
     })
   })
 
-const queueHandler = async (
-  filePath,
-  callbackURL,
-  serviceCredentialId,
-  serviceCallbackTokenId,
-  bookComponentId,
-  responseToken,
-) => {
-  try {
-    const buf = await readFile(filePath)
-    const { path: tmpDir, cleanup } = await tmp.dir({
-      prefix: '_conversion-',
-      unsafeCleanup: true,
-      dir: process.cwd(),
-    })
-
-    await writeFile(path.join(tmpDir, path.basename(filePath)), buf)
-
-    await new Promise((resolve, reject) => {
-      execFile(
-        'unzip',
-        ['-o', `${tmpDir}/${path.basename(filePath)}`, '-d', tmpDir],
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error)
-          }
-          resolve(stdout)
-        },
-      )
-    })
-
-    await new Promise((resolve, reject) => {
-      exec(
-        `sh ${path.resolve(
-          __dirname,
-          '..',
-          '..',
-          'scripts',
-          'execute_chain.sh',
-        )} ${tmpDir}`,
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error)
-          }
-          resolve(stdout)
-        },
-      )
-    })
-
-    const html = await readFile(
-      path.join(tmpDir, 'outputs', 'HTML5.html'),
-      'utf8',
-    )
-
-    const cleaned = imageCleaner(html)
-    const fixed = contentFixer(cleaned)
-
-    await axios({
-      method: 'post',
-      url: `${callbackURL}/api/xsweet`,
-      data: {
-        convertedContent: fixed,
-        serviceCredentialId,
-        serviceCallbackTokenId,
-        bookComponentId,
-        responseToken,
-      },
-    })
-
-    await cleanup()
-    await fs.remove(filePath)
-    return true
-  } catch (e) {
-    await fs.remove(filePath)
-    return axios({
-      method: 'post',
-      url: `${callbackURL}/api/xsweet`,
-      data: {
-        convertedContent: undefined,
-        error: e,
-        serviceCredentialId,
-        serviceCallbackTokenId,
-        bookComponentId,
-        responseToken,
-      },
-    })
-  }
+module.exports = {
+  uploadHandler,
+  readFile,
+  writeFile,
+  imageCleaner,
+  imagesHandler,
+  contentFixer,
 }
-
-module.exports = { uploadHandler, readFile, writeFile, queueHandler }

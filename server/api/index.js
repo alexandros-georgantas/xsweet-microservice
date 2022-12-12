@@ -1,3 +1,3 @@
-const docxToHTML = require('./xsweet.controller')
+const XSweetAPI = require('./api')
 
-module.exports = docxToHTML
+module.exports = XSweetAPI

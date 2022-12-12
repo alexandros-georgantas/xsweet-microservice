@@ -1,5 +1,5 @@
-const docxToHTMLEndpoint = require('./api')
+const XSweetAPI = require('./api')
 
 module.exports = {
-  server: () => app => docxToHTMLEndpoint(app),
+  server: () => app => XSweetAPI(app),
 }

@@ -1,9 +1,44 @@
-const { startServer, boss } = require('@coko/server')
-const { queueHandler } = require('./api/helpers')
+const { startServer, boss, logger } = require('@coko/server')
+const {
+  DOCXToHTMLAsyncHandler,
+  DOCXToHTMLAndSplitAsyncHandler,
+} = require('./api/useCase')
+
+const {
+  DOCX_TO_HTML_AND_SPLIT_JOB,
+  DOCX_TO_HTML_JOB,
+  MICROSERVICE_NAME,
+} = require('./api/constants')
 
 const init = async () => {
+  logger.info(`${MICROSERVICE_NAME} server: about to initialize job queues`)
   startServer().then(async () => {
-    boss.subscribe('xsweet-conversion', async job => {
+    boss.subscribe(DOCX_TO_HTML_JOB, async job => {
+      const { data } = job
+      const {
+        filePath,
+        callbackURL,
+        serviceCredentialId,
+        serviceCallbackTokenId,
+        objectId,
+        responseToken,
+      } = data
+
+      const responseParams = {
+        callbackURL,
+        serviceCredentialId,
+        serviceCallbackTokenId,
+        objectId,
+        responseToken,
+      }
+
+      return DOCXToHTMLAsyncHandler(filePath, responseParams)
+    })
+    logger.info(
+      `${MICROSERVICE_NAME} server: queue ${DOCX_TO_HTML_JOB} registered`,
+    )
+
+    boss.subscribe(DOCX_TO_HTML_AND_SPLIT_JOB, async job => {
       const { data } = job
 
       const {
@@ -11,18 +46,20 @@ const init = async () => {
         callbackURL,
         serviceCredentialId,
         serviceCallbackTokenId,
-        bookComponentId,
         responseToken,
       } = data
-      return queueHandler(
-        filePath,
+
+      const responseParams = {
         callbackURL,
         serviceCredentialId,
         serviceCallbackTokenId,
-        bookComponentId,
         responseToken,
-      )
+      }
+      return DOCXToHTMLAndSplitAsyncHandler(filePath, responseParams)
     })
+    logger.info(
+      `${MICROSERVICE_NAME} server: queue ${DOCX_TO_HTML_AND_SPLIT_JOB} registered`,
+    )
   })
 }
 
