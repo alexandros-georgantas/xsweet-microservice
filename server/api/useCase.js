@@ -93,7 +93,6 @@ const DOCXToHTMLSyncHandler = async filePath => {
 const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
   const {
     callbackURL,
-    serviceCredentialId,
     serviceCallbackTokenId,
     objectId,
     responseToken,
@@ -111,7 +110,6 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
       data: {
         convertedContent: html,
         error: undefined,
-        serviceCredentialId,
         serviceCallbackTokenId,
         objectId,
         responseToken,
@@ -124,7 +122,6 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
       data: {
         convertedContent: undefined,
         error: e,
-        serviceCredentialId,
         serviceCallbackTokenId,
         objectId,
         responseToken,
@@ -210,12 +207,7 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
 }
 
 const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
-  const {
-    callbackURL,
-    serviceCredentialId,
-    serviceCallbackTokenId,
-    responseToken,
-  } = responseParams
+  const { callbackURL, serviceCallbackTokenId, responseToken } = responseParams
   try {
     const chapters = await DOCXToHTMLAndSplitSyncHandler(filePath)
 
@@ -228,7 +220,6 @@ const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
       data: {
         chapters,
         error: undefined,
-        serviceCredentialId,
         serviceCallbackTokenId,
         responseToken,
       },
@@ -240,7 +231,6 @@ const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
       data: {
         convertedContent: undefined,
         error: e,
-        serviceCredentialId,
         serviceCallbackTokenId,
         responseToken,
       },
