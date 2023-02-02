@@ -104,7 +104,7 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): returns the converted file back to its caller`,
     )
 
-    return axios({
+    const res = await axios({
       method: 'post',
       url: callbackURL,
       data: {
@@ -115,8 +115,17 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
         responseToken,
       },
     })
+
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): got response from caller ${res.data.msg}`,
+    )
+    return true
   } catch (e) {
-    return axios({
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): inform caller that something went wrong`,
+    )
+
+    const res = await axios({
       method: 'post',
       url: callbackURL,
       data: {
@@ -127,6 +136,10 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
         responseToken,
       },
     })
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): got response from caller ${res.data.msg}`,
+    )
+    return true
   }
 }
 

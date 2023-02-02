@@ -30,7 +30,8 @@ const init = async () => {
         responseToken,
       }
 
-      return DOCXToHTMLAsyncHandler(filePath, responseParams)
+      await DOCXToHTMLAsyncHandler(filePath, responseParams)
+      return true
     })
     logger.info(
       `${MICROSERVICE_NAME} server: queue ${DOCX_TO_HTML_JOB} registered`,
@@ -51,7 +52,8 @@ const init = async () => {
         serviceCallbackTokenId,
         responseToken,
       }
-      return DOCXToHTMLAndSplitAsyncHandler(filePath, responseParams)
+      await DOCXToHTMLAndSplitAsyncHandler(filePath, responseParams)
+      return true
     })
     logger.info(
       `${MICROSERVICE_NAME} server: queue ${DOCX_TO_HTML_AND_SPLIT_JOB} registered`,
