@@ -18,7 +18,6 @@ const init = async () => {
       const {
         filePath,
         callbackURL,
-        serviceCredentialId,
         serviceCallbackTokenId,
         objectId,
         responseToken,
@@ -26,7 +25,6 @@ const init = async () => {
 
       const responseParams = {
         callbackURL,
-        serviceCredentialId,
         serviceCallbackTokenId,
         objectId,
         responseToken,
@@ -44,14 +42,12 @@ const init = async () => {
       const {
         filePath,
         callbackURL,
-        serviceCredentialId,
         serviceCallbackTokenId,
         responseToken,
       } = data
 
       const responseParams = {
         callbackURL,
-        serviceCredentialId,
         serviceCallbackTokenId,
         responseToken,
       }
