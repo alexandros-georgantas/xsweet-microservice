@@ -7,7 +7,6 @@ const { ServiceClient } = models
 
 const main = async () => {
   try {
-    console.log('hello')
     const exists = await ServiceClient.query().findById(
       '59a3392b-0c4f-4318-bbe2-f86eff6d3de4',
     )
@@ -22,6 +21,7 @@ const main = async () => {
       return true
     }
     logger.info('already exists')
+    return false
   } catch (e) {
     throw new Error(e)
   }

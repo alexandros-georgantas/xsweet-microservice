@@ -20,16 +20,12 @@ const DOCXToHTMLAsyncController = async (req, res) => {
     }
 
     const {
-      serviceCredentialId,
       serviceCallbackTokenId,
       objectId,
       responseToken,
       callbackURL,
     } = req.body
 
-    if (!serviceCredentialId) {
-      throw new Error(`request's parameter serviceCredentialId is required`)
-    }
     if (!serviceCallbackTokenId) {
       throw new Error(`request's parameter serviceCallbackTokenId is required`)
     }
@@ -50,7 +46,6 @@ const DOCXToHTMLAsyncController = async (req, res) => {
     await boss.publish(DOCX_TO_HTML_JOB, {
       filePath,
       callbackURL,
-      serviceCredentialId,
       serviceCallbackTokenId,
       objectId,
       responseToken,
@@ -102,16 +97,8 @@ const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
       return res.status(400).json({ msg: 'docx file is not included' })
     }
 
-    const {
-      serviceCredentialId,
-      serviceCallbackTokenId,
-      responseToken,
-      callbackURL,
-    } = req.body
+    const { serviceCallbackTokenId, responseToken, callbackURL } = req.body
 
-    if (!serviceCredentialId) {
-      throw new Error(`request's parameter serviceCredentialId is required`)
-    }
     if (!serviceCallbackTokenId) {
       throw new Error(`request's parameter serviceCallbackTokenId is required`)
     }
@@ -131,7 +118,6 @@ const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
     await boss.publish(DOCX_TO_HTML_AND_SPLIT_JOB, {
       filePath,
       callbackURL,
-      serviceCredentialId,
       serviceCallbackTokenId,
       responseToken,
     })
