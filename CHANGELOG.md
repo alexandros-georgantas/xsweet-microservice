@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.1.1...v2.1.2) (2023-02-02)
+
+
+### Bug Fixes
+
+* **service:** fix for pg-boss error ([03076d0](https://gitlab.coko.foundation/cokoapps/xsweet/commit/03076d0c73d5b0e95c77f8f6b3931e81cef9e782))
+
 ### [2.1.1](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.1.0...v2.1.1) (2023-02-02)
 
 
