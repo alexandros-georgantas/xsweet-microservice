@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v1.1.1...v2.1.0) (2023-02-02)
+
+
+### Features
+
+* new api and images ([4ab46b2](https://gitlab.coko.foundation/cokoapps/xsweet/commit/4ab46b29b7e94fcc10c477f6303b46474a78b55c))
+* **service:** async and sync endpoints ([9910d1f](https://gitlab.coko.foundation/cokoapps/xsweet/commit/9910d1f99db6a1cd2e4dee1b4c3ee7210050b535))
+* **service:** docx covert and split ([5580ccb](https://gitlab.coko.foundation/cokoapps/xsweet/commit/5580ccb43b71777296a4df3bc06d83e3d1192ec8))
+* **service:** node 16 ([10b194b](https://gitlab.coko.foundation/cokoapps/xsweet/commit/10b194b59ff6d5a001759a5624d1d19edcc4a0dd))
+
+
+### Bug Fixes
+
+* conflict fix ([13269e6](https://gitlab.coko.foundation/cokoapps/xsweet/commit/13269e6b966000d83703c07f5185535f665cd641))
+
 ### [1.1.1](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v1.1.0...v1.1.1) (2021-06-07)
 
 
