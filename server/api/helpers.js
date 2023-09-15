@@ -32,6 +32,8 @@ const imagesHandler = html => {
         'src',
         `data:image/${ext};base64,${base64EncodeFile(filePath)}`,
       )
+
+      $elem.wrap('<figure/>')
     }
   })
 

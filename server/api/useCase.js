@@ -107,6 +107,8 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
     const res = await axios({
       method: 'post',
       url: callbackURL,
+      maxBodyLength: 104857600, // 100mb
+      maxContentLength: 104857600, // 100mb
       data: {
         convertedContent: html,
         error: undefined,
@@ -125,7 +127,21 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): inform caller that something went wrong`,
     )
 
-    const res = await axios({
+    // const res = await axios({
+    //   method: 'post',
+    //   url: callbackURL,
+    //   data: {
+    //     convertedContent: undefined,
+    //     error: e,
+    //     serviceCallbackTokenId,
+    //     objectId,
+    //     responseToken,
+    //   },
+    // })
+    // logger.info(
+    //   `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): got response from caller ${res.data.msg}`,
+    // )
+    return axios({
       method: 'post',
       url: callbackURL,
       data: {
@@ -136,10 +152,6 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
         responseToken,
       },
     })
-    logger.info(
-      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): got response from caller ${res.data.msg}`,
-    )
-    return true
   }
 }
 
@@ -230,6 +242,8 @@ const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
     return axios({
       method: 'post',
       url: callbackURL,
+      maxBodyLength: 104857600, // 100mb
+      maxContentLength: 104857600, // 100mb
       data: {
         chapters,
         error: undefined,
