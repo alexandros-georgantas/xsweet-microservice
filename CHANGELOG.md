@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.3](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.1.2...v2.1.3) (2023-09-15)
+
+
+### Bug Fixes
+
+* increase max body length in axios and wrap img with figure ([f69e54f](https://gitlab.coko.foundation/cokoapps/xsweet/commit/f69e54f4915990c697d5bd2f84f8164bcec2dd8c))
+
 ### [2.1.2](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.1.1...v2.1.2) (2023-02-02)
 
 
