@@ -76,8 +76,8 @@ const DOCXToHTMLSyncController = async (req, res) => {
     logger.info(
       `${MICROSERVICE_NAME} controller(DOCXToHTMLSyncController): executes DOCXToHTMLSyncHandler`,
     )
-
-    const htmlContent = await DOCXToHTMLSyncHandler(filePath)
+    const useMath = Boolean(req.body.useMath) // this is true if the request body contains a useMath field
+    const htmlContent = await DOCXToHTMLSyncHandler(filePath, useMath)
 
     return res.status(200).json({
       html: htmlContent,

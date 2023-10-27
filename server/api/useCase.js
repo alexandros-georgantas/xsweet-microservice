@@ -2,7 +2,7 @@ const { logger } = require('@coko/server')
 const tmp = require('tmp-promise')
 const fs = require('fs-extra')
 const cheerio = require('cheerio')
-const { exec, execFile } = require('child_process')
+const { exec, execFile, spawn } = require('child_process')
 const axios = require('axios')
 const path = require('path')
 const { MICROSERVICE_NAME } = require('./constants')
@@ -11,9 +11,10 @@ const {
   writeFile,
   imagesHandler,
   contentFixer,
+  mathFixer,
 } = require('./helpers')
 
-const DOCXToHTMLSyncHandler = async filePath => {
+const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = false) => {
   let cleaner
 
   try {
@@ -45,8 +46,9 @@ const DOCXToHTMLSyncHandler = async filePath => {
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): executes execute_chain.sh script`,
     )
+
     await new Promise((resolve, reject) => {
-      exec(
+      const xsweet = spawn(
         `sh ${path.resolve(
           __dirname,
           '..',
@@ -54,14 +56,29 @@ const DOCXToHTMLSyncHandler = async filePath => {
           'scripts',
           'execute_chain.sh',
         )} ${tmpDir}`,
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error)
-          }
-          resolve(stdout)
-        },
+        [],
+        { shell: true },
       )
+      xsweet.stdout.on('data', data => {
+        logger.info(`stdout: ${data}`)
+      })
+
+      xsweet.stderr.on('data', data => {
+        logger.info(`stderr: ${data}`)
+      })
+
+      xsweet.on('error', error => {
+        if (error) {
+          reject(error)
+        }
+      })
+
+      xsweet.on('close', code => {
+        logger.info(`child process exited with code ${code}`)
+        resolve(code)
+      })
     })
+
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): reads produces HTML file`,
     )
@@ -76,7 +93,7 @@ const DOCXToHTMLSyncHandler = async filePath => {
     const cleanedFromImages = imagesHandler(html)
     const fixedContent = contentFixer(cleanedFromImages)
 
-    return fixedContent
+    return useMathCleaner ? mathFixer(fixedContent) : fixedContent
   } catch (e) {
     throw new Error(e)
   } finally {
