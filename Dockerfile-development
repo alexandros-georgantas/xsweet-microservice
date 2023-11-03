@@ -1,6 +1,6 @@
 FROM node:16.16.0-alpine3.16
 
-RUN apk update && apk add --no-cache ranger vim bash coreutils unzip openjdk11-jre-headless git
+RUN apk update && apk add --no-cache ranger vim bash coreutils unzip openjdk11-jre-headless git 
 
 WORKDIR /home/node/xsweet
 # Download XSweet
@@ -12,6 +12,22 @@ RUN wget https://gitlab.coko.foundation/XSweet/HTMLevator/-/archive/wax2/HTMLeva
 RUN wget "https://sourceforge.net/projects/saxon/files/Saxon-HE/10/Java/SaxonHE10-3J.zip/download" -O saxon.zip; unzip saxon.zip -d saxon; rm saxon.zip
 
 RUN chown -R node:node /home/node/xsweet
+
+## getting Pandoc to work
+
+RUN echo "Downloading and installing ghcup" &&\
+	GHCUP_VERSION="0.1.17.8" &&\
+	GHCUP_SHA256="d7c66d2c4762393b752634bd4a2d7deb4e22340a9d8af7bb95aa1ce6f6651235  /usr/bin/ghcup" &&\
+	cd /tmp &&\
+	wget -O /usr/bin/ghcup "https://downloads.haskell.org/~ghcup/${GHCUP_VERSION}/x86_64-linux-ghcup-${GHCUP_VERSION}" &&\
+	if ! echo -n "${GHCUP_SHA256}" | sha256sum -c -; then \
+	echo "ghcup checksum failed" >&2 &&\
+	exit 1 ;\
+	fi ;\
+	chmod +x /usr/bin/ghcup
+RUN cabal update
+
+## back to xsweet install
 
 USER node
 
@@ -25,3 +41,4 @@ COPY --chown=node:node . .
 RUN chmod +x ./scripts/move_xslts.sh
 RUN chmod +x ./scripts/execute_chain.sh
 RUN ./scripts/move_xslts.sh
+

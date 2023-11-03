@@ -107,6 +107,104 @@ const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = false) => {
   }
 }
 
+const DOCXToHTMLSyncPandocHandler = async (
+  filePath,
+  useMathCleaner = false,
+) => {
+  // based on DOCXToHTMLAsyncHandler
+  let cleaner
+
+  try {
+    const { path: tmpDir, cleanup } = await tmp.dir({
+      prefix: '_conversion-',
+      unsafeCleanup: true,
+      dir: process.cwd(),
+    })
+    cleaner = cleanup
+    const buf = await readFile(filePath)
+
+    await writeFile(path.join(tmpDir, path.basename(filePath)), buf)
+    await writeFile(path.join(tmpDir, 'document.docx'), buf)
+    // logger.info(
+    //   `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): extracts docx's components`,
+    // )
+
+    // await new Promise((resolve, reject) => {
+    //   execFile(
+    //     'unzip',
+    //     ['-o', `${tmpDir}/${path.basename(filePath)}`, '-d', tmpDir],
+    //     (error, stdout, stderr) => {
+    //       if (error) {
+    //         reject(error)
+    //       }
+    //       resolve(stdout)
+    //     },
+    //   )
+    // })
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): executes execute_chain_pandoc.sh script`,
+    )
+
+    await new Promise((resolve, reject) => {
+      const xsweet = spawn(
+        `sh ${path.resolve(
+          __dirname,
+          '..',
+          '..',
+          'scripts',
+          'execute_chain_pandoc.sh',
+        )} ${tmpDir}`,
+        [],
+        { shell: true },
+      )
+      xsweet.stdout.on('data', data => {
+        logger.info(`stdout: ${data}`)
+      })
+
+      xsweet.stderr.on('data', data => {
+        logger.info(`stderr: ${data}`)
+      })
+
+      xsweet.on('error', error => {
+        if (error) {
+          reject(error)
+        }
+      })
+
+      xsweet.on('close', code => {
+        logger.info(`child process exited with code ${code}`)
+        resolve(code)
+      })
+    })
+
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncPandocHandler): reads produces HTML file`,
+    )
+    const html = await readFile(
+      path.join(tmpDir, 'outputs', 'HTML5.html'),
+      'utf8',
+    )
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncPandocHandler): cleans HTML file from images and unnecessary attributes`,
+    )
+
+    const cleanedFromImages = imagesHandler(html)
+    const fixedContent = contentFixer(cleanedFromImages)
+
+    return useMathCleaner ? mathFixer(fixedContent) : fixedContent
+  } catch (e) {
+    throw new Error(e)
+  } finally {
+    if (cleaner) {
+      await cleaner()
+    }
+    await fs.remove(filePath)
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncPandocHandler): removes tmp folders and docx file`,
+    )
+  }
+}
+
 const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
   const {
     callbackURL,
@@ -287,4 +385,5 @@ module.exports = {
   DOCXToHTMLSyncHandler,
   DOCXToHTMLAndSplitAsyncHandler,
   DOCXToHTMLAndSplitSyncHandler,
+  DOCXToHTMLSyncPandocHandler,
 }

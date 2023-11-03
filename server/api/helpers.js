@@ -45,13 +45,13 @@ const mathFixer = html => {
   $('math-display').each((i, elem) => {
     const $elem = $(elem)
     const newMath = $elem.text().replaceAll('\\\\', '\\')
-    console.log('display math: ', newMath)
+    // console.log('display math: ', newMath)
     $elem.replaceWith(String.raw`<math-display>${newMath}</math-display>`)
   })
   $('math-inline').each((i, elem) => {
     const $elem = $(elem)
     const newMath = $elem.text().replaceAll('\\\\', '\\')
-    console.log('inline math: ', newMath)
+    // console.log('inline math: ', newMath)
     $elem.replaceWith(String.raw`<math-inline>${newMath}</math-inline>`)
   })
   const result = $.html()

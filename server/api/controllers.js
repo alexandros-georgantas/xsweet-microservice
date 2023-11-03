@@ -3,6 +3,7 @@ const { boss, logger } = require('@coko/server')
 const {
   DOCXToHTMLSyncHandler,
   DOCXToHTMLAndSplitSyncHandler,
+  DOCXToHTMLSyncPandocHandler,
 } = require('./useCase')
 const {
   DOCX_TO_HTML_AND_SPLIT_JOB,
@@ -88,6 +89,32 @@ const DOCXToHTMLSyncController = async (req, res) => {
   }
 }
 
+const DOCXToHTMLSyncPandocController = async (req, res) => {
+  try {
+    if (req.fileValidationError) {
+      return res.status(400).json({ msg: req.fileValidationError })
+    }
+    if (!req.file) {
+      return res.status(400).json({ msg: 'docx file is not included' })
+    }
+
+    const { path: filePath } = req.file
+
+    logger.info(
+      `${MICROSERVICE_NAME} controller(DOCXToHTMLSyncController): executes DOCXToHTMLSyncPandocHandler`,
+    )
+    const useMath = Boolean(req.body.useMath) // this is true if the request body contains a useMath field
+    const htmlContent = await DOCXToHTMLSyncPandocHandler(filePath, useMath)
+
+    return res.status(200).json({
+      html: htmlContent,
+      error: null,
+    })
+  } catch (e) {
+    return res.status(500).json({ html: null, error: e.message })
+  }
+}
+
 const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
   try {
     if (req.fileValidationError) {
@@ -163,4 +190,5 @@ module.exports = {
   DOCXToHTMLAndSplitAsyncController,
   DOCXToHTMLSyncController,
   DOCXToHTMLAndSplitSyncController,
+  DOCXToHTMLSyncPandocController,
 }

@@ -1,6 +1,6 @@
 FROM node:16.16.0-alpine3.16
 
-RUN apk update && apk add --no-cache unzip bash openjdk11-jre-headless git coreutils
+RUN apk update && apk add --no-cache unzip bash openjdk11-jre-headless git coreutils pandoc
 
 WORKDIR /home/node/xsweet
 # Download XSweet

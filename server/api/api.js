@@ -5,6 +5,7 @@ const {
   DOCXToHTMLAndSplitAsyncController,
   DOCXToHTMLAsyncController,
   DOCXToHTMLSyncController,
+  DOCXToHTMLSyncPandocController,
 } = require('./controllers')
 
 const { uploadHandler } = require('./helpers')
@@ -21,6 +22,12 @@ const XSweetAPI = app => {
     authenticate,
     uploadHandler,
     DOCXToHTMLSyncController,
+  )
+  app.post(
+    '/api/v1/sync/DOCXToHTMLPandoc',
+    authenticate,
+    uploadHandler,
+    DOCXToHTMLSyncPandocController,
   )
   app.post(
     '/api/v1/async/DOCXToHTMLAndSplit',
