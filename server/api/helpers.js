@@ -40,6 +40,22 @@ const imagesHandler = html => {
   return $.html()
 }
 
+const mathFixer = html => {
+  const $ = cheerio.load(html)
+  $('math-display').each((i, elem) => {
+    const $elem = $(elem)
+    const newMath = $elem.text().replaceAll('\\\\', '\\')
+    $elem.replaceWith(String.raw`<math-display>${newMath}</math-display>`)
+  })
+  $('math-inline').each((i, elem) => {
+    const $elem = $(elem)
+    const newMath = $elem.text().replaceAll('\\\\', '\\')
+    $elem.replaceWith(String.raw`<math-inline>${newMath}</math-inline>`)
+  })
+
+  return $('body').html()
+}
+
 const contentFixer = html => {
   const $ = cheerio.load(html)
   $('p').each((i, elem) => {
@@ -111,4 +127,5 @@ module.exports = {
   imageCleaner,
   imagesHandler,
   contentFixer,
+  mathFixer,
 }

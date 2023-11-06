@@ -21,6 +21,7 @@ const init = async () => {
         serviceCallbackTokenId,
         objectId,
         responseToken,
+        useMath,
       } = data
 
       const responseParams = {
@@ -29,8 +30,7 @@ const init = async () => {
         objectId,
         responseToken,
       }
-
-      await DOCXToHTMLAsyncHandler(filePath, responseParams)
+      await DOCXToHTMLAsyncHandler(filePath, responseParams, useMath)
       return true
     })
     logger.info(
@@ -45,6 +45,7 @@ const init = async () => {
         callbackURL,
         serviceCallbackTokenId,
         responseToken,
+        useMath,
       } = data
 
       const responseParams = {
@@ -52,7 +53,7 @@ const init = async () => {
         serviceCallbackTokenId,
         responseToken,
       }
-      await DOCXToHTMLAndSplitAsyncHandler(filePath, responseParams)
+      await DOCXToHTMLAndSplitAsyncHandler(filePath, responseParams, useMath)
       return true
     })
     logger.info(
