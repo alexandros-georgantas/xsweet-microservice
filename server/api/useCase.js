@@ -2,7 +2,7 @@ const { logger } = require('@coko/server')
 const tmp = require('tmp-promise')
 const fs = require('fs-extra')
 const cheerio = require('cheerio')
-const { exec, execFile } = require('child_process')
+const { execFile, spawn } = require('child_process')
 const axios = require('axios')
 const path = require('path')
 const { MICROSERVICE_NAME } = require('./constants')
@@ -11,9 +11,10 @@ const {
   writeFile,
   imagesHandler,
   contentFixer,
+  mathFixer,
 } = require('./helpers')
 
-const DOCXToHTMLSyncHandler = async filePath => {
+const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = undefined) => {
   let cleaner
 
   try {
@@ -45,8 +46,9 @@ const DOCXToHTMLSyncHandler = async filePath => {
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): executes execute_chain.sh script`,
     )
+
     await new Promise((resolve, reject) => {
-      exec(
+      const xsweet = spawn(
         `sh ${path.resolve(
           __dirname,
           '..',
@@ -54,14 +56,29 @@ const DOCXToHTMLSyncHandler = async filePath => {
           'scripts',
           'execute_chain.sh',
         )} ${tmpDir}`,
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error)
-          }
-          resolve(stdout)
-        },
+        [],
+        { shell: true },
       )
+      xsweet.stdout.on('data', data => {
+        logger.info(`stdout: ${data}`)
+      })
+
+      xsweet.stderr.on('data', data => {
+        logger.info(`stderr: ${data}`)
+      })
+
+      xsweet.on('error', error => {
+        if (error) {
+          reject(error)
+        }
+      })
+
+      xsweet.on('close', code => {
+        logger.info(`child process exited with code ${code}`)
+        resolve(code)
+      })
     })
+
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLSyncHandler): reads produces HTML file`,
     )
@@ -76,7 +93,7 @@ const DOCXToHTMLSyncHandler = async filePath => {
     const cleanedFromImages = imagesHandler(html)
     const fixedContent = contentFixer(cleanedFromImages)
 
-    return fixedContent
+    return useMathCleaner ? mathFixer(fixedContent) : fixedContent
   } catch (e) {
     throw new Error(e)
   } finally {
@@ -90,7 +107,11 @@ const DOCXToHTMLSyncHandler = async filePath => {
   }
 }
 
-const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
+const DOCXToHTMLAsyncHandler = async (
+  filePath,
+  responseParams,
+  useMathCleaner = undefined,
+) => {
   const {
     callbackURL,
     serviceCallbackTokenId,
@@ -110,7 +131,7 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
       maxBodyLength: 104857600, // 100mb
       maxContentLength: 104857600, // 100mb
       data: {
-        convertedContent: html,
+        convertedContent: useMathCleaner ? mathFixer(html) : html,
         error: undefined,
         serviceCallbackTokenId,
         objectId,
@@ -127,20 +148,6 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): inform caller that something went wrong`,
     )
 
-    // const res = await axios({
-    //   method: 'post',
-    //   url: callbackURL,
-    //   data: {
-    //     convertedContent: undefined,
-    //     error: e,
-    //     serviceCallbackTokenId,
-    //     objectId,
-    //     responseToken,
-    //   },
-    // })
-    // logger.info(
-    //   `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): got response from caller ${res.data.msg}`,
-    // )
     return axios({
       method: 'post',
       url: callbackURL,
@@ -155,7 +162,10 @@ const DOCXToHTMLAsyncHandler = async (filePath, responseParams) => {
   }
 }
 
-const DOCXToHTMLAndSplitSyncHandler = async filePath => {
+const DOCXToHTMLAndSplitSyncHandler = async (
+  filePath,
+  useMathCleaner = undefined,
+) => {
   let cleaner
 
   try {
@@ -188,7 +198,7 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
     )
 
     await new Promise((resolve, reject) => {
-      exec(
+      const xsweet = spawn(
         `sh ${path.resolve(
           __dirname,
           '..',
@@ -197,13 +207,27 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
           'docx-splitter',
           'xsweet_splitter_execute_chain.sh', // or editoria_splitter_execute_chain.sh
         )} ${tmpDir}`,
-        (error, stdout, stderr) => {
-          if (error) {
-            reject(error)
-          }
-          resolve(stdout)
-        },
+        [],
+        { shell: true },
       )
+      xsweet.stdout.on('data', data => {
+        logger.info(`stdout: ${data}`)
+      })
+
+      xsweet.stderr.on('data', data => {
+        logger.info(`stderr: ${data}`)
+      })
+
+      xsweet.on('error', error => {
+        if (error) {
+          reject(error)
+        }
+      })
+
+      xsweet.on('close', code => {
+        logger.info(`child process exited with code ${code}`)
+        resolve(code)
+      })
     })
 
     const html = await readFile(
@@ -217,7 +241,7 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
       // const $elem = $(element).html()
       const chtml = `<container id='main'>${$(element).html()}</container>`
       const content = imagesHandler(chtml)
-      chapters.push(content)
+      chapters.push(useMathCleaner ? mathFixer(content) : content)
     })
 
     return chapters
@@ -231,10 +255,17 @@ const DOCXToHTMLAndSplitSyncHandler = async filePath => {
   }
 }
 
-const DOCXToHTMLAndSplitAsyncHandler = async (filePath, responseParams) => {
+const DOCXToHTMLAndSplitAsyncHandler = async (
+  filePath,
+  responseParams,
+  useMathCleaner = undefined,
+) => {
   const { callbackURL, serviceCallbackTokenId, responseToken } = responseParams
   try {
-    const chapters = await DOCXToHTMLAndSplitSyncHandler(filePath)
+    const chapters = await DOCXToHTMLAndSplitSyncHandler(
+      filePath,
+      useMathCleaner,
+    )
 
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLAndSplitAsyncHandler): returns the converted file back to its caller`,

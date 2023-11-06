@@ -26,6 +26,8 @@ const DOCXToHTMLAsyncController = async (req, res) => {
       callbackURL,
     } = req.body
 
+    const useMath = req.body?.useMath === 'true'
+
     if (!serviceCallbackTokenId) {
       throw new Error(`request's parameter serviceCallbackTokenId is required`)
     }
@@ -49,6 +51,7 @@ const DOCXToHTMLAsyncController = async (req, res) => {
       serviceCallbackTokenId,
       objectId,
       responseToken,
+      useMath,
     })
 
     return res.status(200).json({
@@ -77,7 +80,9 @@ const DOCXToHTMLSyncController = async (req, res) => {
       `${MICROSERVICE_NAME} controller(DOCXToHTMLSyncController): executes DOCXToHTMLSyncHandler`,
     )
 
-    const htmlContent = await DOCXToHTMLSyncHandler(filePath)
+    const useMath = req.body?.useMath === 'true'
+
+    const htmlContent = await DOCXToHTMLSyncHandler(filePath, useMath)
 
     return res.status(200).json({
       html: htmlContent,
@@ -98,6 +103,8 @@ const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
     }
 
     const { serviceCallbackTokenId, responseToken, callbackURL } = req.body
+
+    const useMath = req.body?.useMath === 'true'
 
     if (!serviceCallbackTokenId) {
       throw new Error(`request's parameter serviceCallbackTokenId is required`)
@@ -120,6 +127,7 @@ const DOCXToHTMLAndSplitAsyncController = async (req, res) => {
       callbackURL,
       serviceCallbackTokenId,
       responseToken,
+      useMath,
     })
 
     return res.status(200).json({
@@ -147,7 +155,8 @@ const DOCXToHTMLAndSplitSyncController = async (req, res) => {
       `${MICROSERVICE_NAME} controller(DOCXToHTMLAndSplitSyncController): executes DOCXToHTMLAndSplitSyncHandler`,
     )
 
-    const chapters = await DOCXToHTMLAndSplitSyncHandler(filePath)
+    const useMath = req.body?.useMath === 'true'
+    const chapters = await DOCXToHTMLAndSplitSyncHandler(filePath, useMath)
 
     return res.status(200).json({
       chapters,
