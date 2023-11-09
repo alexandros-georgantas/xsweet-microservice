@@ -42,10 +42,16 @@ const imagesHandler = html => {
 
 const mathFixer = html => {
   const $ = cheerio.load(html)
-  $('math-display').each((i, elem) => {
+  $('p math-display').each((i, elem) => {
+    // We are getting back math-display in the form <p><math-display>[equation]</math-display></p>
+    // Wax sees math-display as a block-level node; if it is nested in a paragraph, we get <p>[equotion]</p>
+    // This looks for math-display inside of a paragraph and replaces it with <math-display>[equation]</math-display>
     const $elem = $(elem)
     const newMath = $elem.text().replaceAll('\\\\', '\\')
-    $elem.replaceWith(String.raw`<math-display>${newMath}</math-display>`)
+
+    $($elem[0].parentNode).replaceWith(
+      String.raw`<math-display>${newMath}</math-display>`,
+    )
   })
   $('math-inline').each((i, elem) => {
     const $elem = $(elem)
