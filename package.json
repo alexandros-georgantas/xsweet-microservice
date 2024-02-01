@@ -1,6 +1,6 @@
 {
   "name": "@coko/xsweet",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Service that converts docx files into HTML",
   "main": "server/index.js",
   "scripts": {
