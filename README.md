@@ -53,3 +53,8 @@ All the above are required
 
 When the service is up by executing `docker exec -it <name_of_the_xsweet_server_container> yarn create:client`.  
 The above will produce a valid pair of clientId and clientSecret
+
+## Mathtype
+
+-- added Ruby, Mathtype gem into this.
+-- pathway we're using is DOCXToHTMLSyncController

@@ -1,6 +1,10 @@
 FROM node:16.16.0-alpine3.16
 
-RUN apk update && apk add --no-cache ranger vim bash coreutils unzip openjdk11-jre-headless git
+RUN apk update && apk add --no-cache ranger vim bash coreutils unzip openjdk11-jre-headless git ruby gcompat 
+
+# install mathtype – ruby and gcompat above were addded to make nokogiri work correctly.
+
+RUN gem install mathtype
 
 WORKDIR /home/node/xsweet
 # Download XSweet
