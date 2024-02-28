@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.3](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.2.2...v2.2.3) (2024-02-01)
+
+### [2.2.2](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.2.1...v2.2.2) (2024-01-15)
+
+
+### Bug Fixes
+
+* **service:** log errors when async use-cases face issues ([033afd0](https://gitlab.coko.foundation/cokoapps/xsweet/commit/033afd0287286ee66beb0765752c7761f69dbecb))
+
 ### [2.2.1](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.1.3...v2.2.1) (2023-11-06)
 
 

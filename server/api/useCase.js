@@ -220,6 +220,9 @@ const DOCXToHTMLAsyncHandler = async (
     logger.info(
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): inform caller that something went wrong`,
     )
+    logger.error(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): ${e.message}`,
+    )
 
     return axios({
       method: 'post',
@@ -356,6 +359,13 @@ const DOCXToHTMLAndSplitAsyncHandler = async (
       },
     })
   } catch (e) {
+    logger.info(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAndSplitAsyncHandler): inform caller that something went wrong`,
+    )
+    logger.error(
+      `${MICROSERVICE_NAME} use-case(DOCXToHTMLAndSplitAsyncHandler): ${e.message}`,
+    )
+
     return axios({
       method: 'post',
       url: callbackURL,

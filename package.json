@@ -1,6 +1,6 @@
 {
   "name": "@coko/xsweet",
-  "version": "2.2.1",
+  "version": "2.2.3",
   "description": "Service that converts docx files into HTML",
   "main": "server/index.js",
   "scripts": {
@@ -26,8 +26,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@coko/server": "2.0.0-beta.1",
-    "@coko/service-auth": "^1.1.7",
+    "@coko/server": "^3.8.1",
+    "@coko/service-auth": "^1.2.0",
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.5",
     "config": "^3.3.2",
