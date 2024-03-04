@@ -56,5 +56,4 @@ The above will produce a valid pair of clientId and clientSecret
 
 ## Mathtype
 
--- added Ruby, Mathtype gem into this.
--- pathway we're using is DOCXToHTMLSyncController
+This uses a Ruby gem to decode binary MathType files that are found inside of the DOCX file; otherwise, these files would be output as WMF files, which can't be viewed by a browser. Not all WMF files are MathType.
