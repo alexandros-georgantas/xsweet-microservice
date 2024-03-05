@@ -66,6 +66,7 @@ const DOCXToHTMLAsyncController = async (req, res) => {
 }
 
 const DOCXToHTMLSyncController = async (req, res) => {
+  // This is what's used by Kotahi
   try {
     if (req.fileValidationError) {
       return res.status(400).json({ msg: req.fileValidationError })

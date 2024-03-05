@@ -53,3 +53,7 @@ All the above are required
 
 When the service is up by executing `docker exec -it <name_of_the_xsweet_server_container> yarn create:client`.  
 The above will produce a valid pair of clientId and clientSecret
+
+## Mathtype
+
+This uses a Ruby gem to decode binary MathType files that are found inside of the DOCX file; otherwise, these files would be output as WMF files, which can't be viewed by a browser. Not all WMF files are MathType.
