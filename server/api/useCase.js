@@ -108,51 +108,53 @@ const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = undefined) => {
       'utf8',
     )
 
-    // At this point, look in tmpDir/word/media to see if there are any WMF files there. If so . . .
-    logger.info(`${MICROSERVICE_NAME} Checking for WMF files!`)
-    const wmfFilesFound = await checkForFiles(`${tmpDir}/word/media/`, '.wmf')
-    if (wmfFilesFound.length > 0) {
-      logger.info('WMF files found, converting...')
-      await new Promise((resolve, reject) => {
-        const wmfProcess = spawn(
-          `sh ${path.resolve(
-            __dirname,
-            '..',
-            '..',
-            'scripts/mathtype',
-            'processwmffiles.sh',
-          )} ${tmpDir}`,
-          [],
-          { shell: true },
+    if (useMathCleaner) {
+      // At this point, look in tmpDir/word/media to see if there are any WMF files there. If so . . .
+      logger.info(`${MICROSERVICE_NAME} Checking for WMF files!`)
+      const wmfFilesFound = await checkForFiles(`${tmpDir}/word/media/`, '.wmf')
+      if (wmfFilesFound.length > 0) {
+        logger.info('WMF files found, converting...')
+        await new Promise((resolve, reject) => {
+          const wmfProcess = spawn(
+            `sh ${path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'scripts/mathtype',
+              'processwmffiles.sh',
+            )} ${tmpDir}`,
+            [],
+            { shell: true },
+          )
+          wmfProcess.stdout.on('data', data => {
+            logger.info(`stdout: ${data}`)
+          })
+
+          wmfProcess.stderr.on('data', data => {
+            logger.info(`stderr: ${data}`)
+          })
+
+          wmfProcess.on('error', error => {
+            if (error) {
+              reject(error)
+            }
+          })
+
+          wmfProcess.on('close', code => {
+            logger.info(`child process exited with code ${code}`)
+            resolve(code)
+          })
+        })
+        // Check if we have .xml files in the tmpDir/word/media/tex folder
+        // If so, send them to a function that reinserts them.
+        const texFilesFound = await checkForFiles(
+          `${tmpDir}/word/media/tex/`,
+          '.xml',
         )
-        wmfProcess.stdout.on('data', data => {
-          logger.info(`stdout: ${data}`)
-        })
-
-        wmfProcess.stderr.on('data', data => {
-          logger.info(`stderr: ${data}`)
-        })
-
-        wmfProcess.on('error', error => {
-          if (error) {
-            reject(error)
-          }
-        })
-
-        wmfProcess.on('close', code => {
-          logger.info(`child process exited with code ${code}`)
-          resolve(code)
-        })
-      })
-      // Check if we have .xml files in the tmpDir/word/media/tex folder
-      // If so, send them to a function that reinserts them.
-      const texFilesFound = await checkForFiles(
-        `${tmpDir}/word/media/tex/`,
-        '.xml',
-      )
-      if (texFilesFound.length > 0) {
-        logger.info('TeX files generated!')
-        html = await reintegrateMathType(html, texFilesFound)
+        if (texFilesFound.length > 0) {
+          logger.info('TeX files generated!')
+          html = await reintegrateMathType(html, texFilesFound)
+        }
       }
     }
 
@@ -205,51 +207,53 @@ const DOCXToHTMLAsyncHandler = async (
       `${MICROSERVICE_NAME} use-case(DOCXToHTMLAsyncHandler): returns the converted file back to its caller`,
     )
 
-    // At this point, look in tmpDir/word/media to see if there are any WMF files there. If so . . .
-    logger.info(`${MICROSERVICE_NAME} Checking for WMF files!`)
-    const wmfFilesFound = await checkForFiles(`${tmpDir}/word/media/`, '.wmf')
-    if (wmfFilesFound.length > 0) {
-      logger.info('WMF files found, converting...')
-      await new Promise((resolve, reject) => {
-        const wmfProcess = spawn(
-          `sh ${path.resolve(
-            __dirname,
-            '..',
-            '..',
-            'scripts/mathtype',
-            'processwmffiles.sh',
-          )} ${tmpDir}`,
-          [],
-          { shell: true },
+    if (useMathCleaner) {
+      // At this point, look in tmpDir/word/media to see if there are any WMF files there. If so . . .
+      logger.info(`${MICROSERVICE_NAME} Checking for WMF files!`)
+      const wmfFilesFound = await checkForFiles(`${tmpDir}/word/media/`, '.wmf')
+      if (wmfFilesFound.length > 0) {
+        logger.info('WMF files found, converting...')
+        await new Promise((resolve, reject) => {
+          const wmfProcess = spawn(
+            `sh ${path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'scripts/mathtype',
+              'processwmffiles.sh',
+            )} ${tmpDir}`,
+            [],
+            { shell: true },
+          )
+          wmfProcess.stdout.on('data', data => {
+            logger.info(`stdout: ${data}`)
+          })
+
+          wmfProcess.stderr.on('data', data => {
+            logger.info(`stderr: ${data}`)
+          })
+
+          wmfProcess.on('error', error => {
+            if (error) {
+              reject(error)
+            }
+          })
+
+          wmfProcess.on('close', code => {
+            logger.info(`child process exited with code ${code}`)
+            resolve(code)
+          })
+        })
+        // Check if we have .xml files in the tmpDir/word/media/tex folder
+        // If so, send them to a function that reinserts them.
+        const texFilesFound = await checkForFiles(
+          `${tmpDir}/word/media/tex/`,
+          '.xml',
         )
-        wmfProcess.stdout.on('data', data => {
-          logger.info(`stdout: ${data}`)
-        })
-
-        wmfProcess.stderr.on('data', data => {
-          logger.info(`stderr: ${data}`)
-        })
-
-        wmfProcess.on('error', error => {
-          if (error) {
-            reject(error)
-          }
-        })
-
-        wmfProcess.on('close', code => {
-          logger.info(`child process exited with code ${code}`)
-          resolve(code)
-        })
-      })
-      // Check if we have .xml files in the tmpDir/word/media/tex folder
-      // If so, send them to a function that reinserts them.
-      const texFilesFound = await checkForFiles(
-        `${tmpDir}/word/media/tex/`,
-        '.xml',
-      )
-      if (texFilesFound.length > 0) {
-        logger.info('TeX files generated!')
-        html = await reintegrateMathType(html, texFilesFound)
+        if (texFilesFound.length > 0) {
+          logger.info('TeX files generated!')
+          html = await reintegrateMathType(html, texFilesFound)
+        }
       }
     }
 
@@ -372,51 +376,53 @@ const DOCXToHTMLAndSplitSyncHandler = async (
       'utf8',
     )
 
-    // At this point, look in tmpDir/word/media to see if there are any WMF files there. If so . . .
-    logger.info(`${MICROSERVICE_NAME} Checking for WMF files!`)
-    const wmfFilesFound = await checkForFiles(`${tmpDir}/word/media/`, '.wmf')
-    if (wmfFilesFound.length > 0) {
-      logger.info('WMF files found, converting...')
-      await new Promise((resolve, reject) => {
-        const wmfProcess = spawn(
-          `sh ${path.resolve(
-            __dirname,
-            '..',
-            '..',
-            'scripts/mathtype',
-            'processwmffiles.sh',
-          )} ${tmpDir}`,
-          [],
-          { shell: true },
+    if (useMathCleaner) {
+      // At this point, look in tmpDir/word/media to see if there are any WMF files there. If so . . .
+      logger.info(`${MICROSERVICE_NAME} Checking for WMF files!`)
+      const wmfFilesFound = await checkForFiles(`${tmpDir}/word/media/`, '.wmf')
+      if (wmfFilesFound.length > 0) {
+        logger.info('WMF files found, converting...')
+        await new Promise((resolve, reject) => {
+          const wmfProcess = spawn(
+            `sh ${path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'scripts/mathtype',
+              'processwmffiles.sh',
+            )} ${tmpDir}`,
+            [],
+            { shell: true },
+          )
+          wmfProcess.stdout.on('data', data => {
+            logger.info(`stdout: ${data}`)
+          })
+
+          wmfProcess.stderr.on('data', data => {
+            logger.info(`stderr: ${data}`)
+          })
+
+          wmfProcess.on('error', error => {
+            if (error) {
+              reject(error)
+            }
+          })
+
+          wmfProcess.on('close', code => {
+            logger.info(`child process exited with code ${code}`)
+            resolve(code)
+          })
+        })
+        // Check if we have .xml files in the tmpDir/word/media/tex folder
+        // If so, send them to a function that reinserts them.
+        const texFilesFound = await checkForFiles(
+          `${tmpDir}/word/media/tex/`,
+          '.xml',
         )
-        wmfProcess.stdout.on('data', data => {
-          logger.info(`stdout: ${data}`)
-        })
-
-        wmfProcess.stderr.on('data', data => {
-          logger.info(`stderr: ${data}`)
-        })
-
-        wmfProcess.on('error', error => {
-          if (error) {
-            reject(error)
-          }
-        })
-
-        wmfProcess.on('close', code => {
-          logger.info(`child process exited with code ${code}`)
-          resolve(code)
-        })
-      })
-      // Check if we have .xml files in the tmpDir/word/media/tex folder
-      // If so, send them to a function that reinserts them.
-      const texFilesFound = await checkForFiles(
-        `${tmpDir}/word/media/tex/`,
-        '.xml',
-      )
-      if (texFilesFound.length > 0) {
-        logger.info('TeX files generated!')
-        html = await reintegrateMathType(html, texFilesFound)
+        if (texFilesFound.length > 0) {
+          logger.info('TeX files generated!')
+          html = await reintegrateMathType(html, texFilesFound)
+        }
       }
     }
 
