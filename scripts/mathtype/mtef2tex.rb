@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 #For container application's docker files should have commands to install `ruby` and `mathtype gem`
 require 'mathtype'
-puts "Converting MathType binaries to MREF XML..."
+puts "Converting MathType binaries to MTEF XML..."
 texInToHtml=ARGV[3]
 mtef2tex=ARGV[2]
 

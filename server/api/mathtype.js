@@ -1,4 +1,5 @@
 const cheerio = require('cheerio')
+// const striptags = require('striptags') // maybe use this if we want to keep text in tags in LaTeX?
 const { logger } = require('@coko/server')
 const { readFile } = require('./helpers')
 
@@ -17,11 +18,37 @@ const getTexFiles = async xmlFiles => {
 
     try {
       // eslint-disable-next-line prefer-destructuring
-      texFiles[i] = thisXml.split('<tex display="block">')[1].split('</tex>')[0]
+      texFiles[i] = thisXml
+        .split(/<tex display="[a-z]*">/)[1]
+        .split('</tex>')[0]
+      // logger.info('found TeX: ', texFiles[i])
+      if (texFiles[i].match(/<[a-z_]+>/)) {
+        // If we are here, there are XML tags in the TeX. Let's try to remove them.
+        // This method removes XML tags BUT leaves the content. Not 100% sure that's what we should do.
+        // texFiles[i] = striptags(texFiles[i], {
+        //   encodePlaintextTagDelimiters: false,
+        // })
+        // This method is taking out specifc tags, though it's possible other things might be getting through!
+        texFiles[i] = texFiles[i]
+          .replaceAll(/<font_style_def>[\s\S]*?<\/font_style_def>/g, '')
+          .replaceAll(/<ruler>[\s\S]*?<\/ruler>/g, '')
+          .replaceAll(/<halign>[\s\S]*?<\/halign>/g, '')
+          .replaceAll(/<valign>[\s\S]*?<\/valign>/g, '')
+          .replaceAll(/<nudge>[\s\S]*?<\/nudge>/g, '')
+          .replaceAll(/<color_def>[\s\S]*?<\/color_def>/g, '')
+          .replaceAll(/<color>[\s\S]*?<\/color>/g, '')
+        if (texFiles[i].match(/<[a-z_]+>/)) {
+          logger.info(`\nFound XML tag in LaTeX: ${texFiles[i]}`)
+        }
+      }
     } catch (e) {
       // It's entirely possible that we won't have one of those in our MathML. What do we do without it?
       // It seems like we should be able to use MathJax to convert regular MathML, but MathJax maybe doesn't go that way?
-      logger.error(`Didn't find <text display="block"> in MathML!`, e)
+      logger.error(
+        `Didn't find <tex display="block"> or <tex display="inline"> in MathML!`,
+      )
+
+      logger.error(thisXml)
       texFiles[i] = thisXml
       errorList.push(i)
     }
@@ -60,15 +87,21 @@ const reintegrateMathType = async (html, texFilesList) => {
   // This makes all equations block. This might not be what is wanted, but we would have to go upstream to fix this.
   logger.info('Reintegrating TeX into HTML')
   const $ = cheerio.load(html)
-
+  // logger.info('Loaded HTML')
   $('img').each((i, elem) => {
     if (!errorList.includes(i)) {
       // If it's in the error list, we're just going to leave the offending WMF for now.
       // const img = $(elem).find('img')[0]
       const attributes = getAllAttributes(elem)
-      const src = attributes.find(attr => attr.name === 'src').value
-      // right now src looks like file:/home/node/xsweet/_conversion-44126Z2v7r29G1Fh/word/media/image47.wmf
-      if (src.indexOf('/word/media/image') > -1 && src.indexOf('.wmf') > -1) {
+      const src = attributes.find(attr => attr.name === 'src')?.value || ''
+
+      if (!src) {
+        // for some word art, we were getting imgs without src?
+        $(elem).replaceWith('')
+      } else if (
+        src.indexOf('/word/media/image') > -1 &&
+        src.indexOf('.wmf') > -1
+      ) {
         // Check if the parent is a paragraph, and if so, wrap it in inline?
         const parentTag = $(elem).parent().prop('tagName').toLowerCase()
         if (parentTag === 'p') {
@@ -81,8 +114,6 @@ const reintegrateMathType = async (html, texFilesList) => {
     }
   })
   const outputHtml = await $('body').html()
-
-  // logger.info('output: ', outputHtml)
   return outputHtml
 }
 
