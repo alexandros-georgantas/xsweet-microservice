@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.2.4...v2.3.0) (2024-03-21)
+
+
+### Features
+
+* **service:** more mathtype fixes, this time in a clean branch ([a017b92](https://gitlab.coko.foundation/cokoapps/xsweet/commit/a017b92ef03df9690e72ed371631ccc4b641c8b9))
+
 ### [2.2.4](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.2.3...v2.2.4) (2024-03-05)
 
 ### [2.2.3](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.2.2...v2.2.3) (2024-02-01)
