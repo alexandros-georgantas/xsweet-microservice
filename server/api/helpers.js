@@ -71,6 +71,10 @@ const contentFixer = html => {
     if (!$elem.attr('class')) {
       $elem.attr('class', 'paragraph')
     }
+    if ($elem.attr('class') && $elem.attr('data-style')) {
+      $elem.attr('class', $elem.attr('data-style'))
+      $elem.removeAttr('data-style')
+    }
   })
   return $('container').html()
 }
