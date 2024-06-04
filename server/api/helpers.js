@@ -72,7 +72,6 @@ const contentFixer = html => {
       $elem.attr('class', 'paragraph')
     }
     if ($elem.attr('class') && $elem.attr('data-style')) {
-      $elem.attr('class', $elem.attr('data-style'))
       $elem.wrap('<aside class="short note"></aside>')
       $elem.removeAttr('data-style')
     }
