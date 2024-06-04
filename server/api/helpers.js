@@ -73,6 +73,7 @@ const contentFixer = html => {
     }
     if ($elem.attr('class') && $elem.attr('data-style')) {
       $elem.attr('class', $elem.attr('data-style'))
+      $elem.wrap('<aside class="short note"></aside>')
       $elem.removeAttr('data-style')
     }
   })
