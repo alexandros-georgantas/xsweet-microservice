@@ -13,6 +13,8 @@ const {
   imagesHandler,
   contentFixer,
   mathFixer,
+  boxFixer,
+  uploadHandler,
 } = require('./helpers')
 
 const checkForFiles = async (startPath, extension) => {
@@ -34,7 +36,7 @@ const checkForFiles = async (startPath, extension) => {
   return wmfList
 }
 
-const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = undefined) => {
+const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = undefined, useBox = undefined) => {
   // this is what's used by Kotahi
   let cleaner
 
@@ -163,7 +165,7 @@ const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = undefined) => {
     )
 
     const cleanedFromImages = imagesHandler(html)
-    const fixedContent = contentFixer(cleanedFromImages)
+    const fixedContent = useBox ? boxFixer(cleanedFromImages) : contentFixer(cleanedFromImages)
     const cleanedMath = useMathCleaner ? mathFixer(fixedContent) : fixedContent
     const passThroughWMF = cleanedMath
       .replaceAll('math@display', 'math-display')
