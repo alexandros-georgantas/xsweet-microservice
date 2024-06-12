@@ -54,6 +54,13 @@ All the above are required
 When the service is up by executing `docker exec -it <name_of_the_xsweet_server_container> yarn create:client`.  
 The above will produce a valid pair of clientId and clientSecret
 
+## Flags
+
+This service runs a single pipeline of XSweet scripts. However, there are a few flags that can be set to change post-processing behavior. Pass these as keys in the body of the request to the service.
+
+ - **useMath**: if this is `true`, this will try to convert any WMF files to MathML - if MathType has been used in Word, equations will be stored as binary WMF files. Not all WMF files are Mathtype. By default, this isn't run.
+ - **useBox**: if this is `true`, paragraph elements with a `data-style` attribute coming out of XSweet will be wrapped in `<aside class="short note">`, which works with the OEN tools in Wax. If this isn't run, the attribute will be passed through, though it will probably be stripped out by Wax.
+
 ## Mathtype
 
 This uses a Ruby gem to decode binary MathType files that are found inside of the DOCX file; otherwise, these files would be output as WMF files, which can't be viewed by a browser. Not all WMF files are MathType.

@@ -14,7 +14,7 @@ const {
   contentFixer,
   mathFixer,
   boxFixer,
-  uploadHandler,
+  // uploadHandler,
 } = require('./helpers')
 
 const checkForFiles = async (startPath, extension) => {
@@ -36,7 +36,11 @@ const checkForFiles = async (startPath, extension) => {
   return wmfList
 }
 
-const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = undefined, useBox = undefined) => {
+const DOCXToHTMLSyncHandler = async (
+  filePath,
+  useMathCleaner = undefined,
+  useBox = undefined,
+) => {
   // this is what's used by Kotahi
   let cleaner
 
@@ -165,12 +169,15 @@ const DOCXToHTMLSyncHandler = async (filePath, useMathCleaner = undefined, useBo
     )
 
     const cleanedFromImages = imagesHandler(html)
-    const fixedContent = useBox ? boxFixer(cleanedFromImages) : contentFixer(cleanedFromImages)
+    const fixedContent = useBox
+      ? contentFixer(boxFixer(cleanedFromImages))
+      : contentFixer(cleanedFromImages)
     const cleanedMath = useMathCleaner ? mathFixer(fixedContent) : fixedContent
     const passThroughWMF = cleanedMath
       .replaceAll('math@display', 'math-display')
       .replaceAll('math@inline', 'math-inline')
-    return passThroughWMF
+    const cleanedBoxes = useBox ? boxFixer(passThroughWMF) : passThroughWMF
+    return cleanedBoxes
   } catch (e) {
     throw new Error(e)
   } finally {
@@ -188,6 +195,7 @@ const DOCXToHTMLAsyncHandler = async (
   filePath,
   responseParams,
   useMathCleaner = undefined,
+  useBox = undefined,
 ) => {
   const {
     callbackURL,
@@ -264,6 +272,7 @@ const DOCXToHTMLAsyncHandler = async (
     const passThroughWMF = mathCleaned
       .replaceAll('math@display', 'math-display')
       .replaceAll('math@inline', 'math-inline')
+    const cleanedBoxes = useBox ? boxFixer(passThroughWMF) : passThroughWMF
 
     const res = await axios({
       method: 'post',
@@ -271,7 +280,7 @@ const DOCXToHTMLAsyncHandler = async (
       maxBodyLength: 104857600, // 100mb
       maxContentLength: 104857600, // 100mb
       data: {
-        convertedContent: passThroughWMF,
+        convertedContent: cleanedBoxes,
         error: undefined,
         serviceCallbackTokenId,
         objectId,
@@ -308,6 +317,7 @@ const DOCXToHTMLAsyncHandler = async (
 const DOCXToHTMLAndSplitSyncHandler = async (
   filePath,
   useMathCleaner = undefined,
+  useBox = undefined,
 ) => {
   let cleaner
 
@@ -439,7 +449,8 @@ const DOCXToHTMLAndSplitSyncHandler = async (
         .replaceAll('math@display', 'math-display')
         .replaceAll('math@inline', 'math-inline')
 
-      chapters.push(passThroughWMF)
+      const cleanedBoxes = useBox ? boxFixer(passThroughWMF) : passThroughWMF
+      chapters.push(cleanedBoxes)
     })
 
     return chapters
@@ -457,12 +468,14 @@ const DOCXToHTMLAndSplitAsyncHandler = async (
   filePath,
   responseParams,
   useMathCleaner = undefined,
+  useBox = undefined,
 ) => {
   const { callbackURL, serviceCallbackTokenId, responseToken } = responseParams
   try {
     const chapters = await DOCXToHTMLAndSplitSyncHandler(
       filePath,
       useMathCleaner,
+      useBox,
     )
 
     logger.info(

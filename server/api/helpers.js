@@ -40,7 +40,6 @@ const imagesHandler = html => {
   return $.html()
 }
 
-
 const boxFixer = html => {
   const $ = cheerio.load(html)
   $('p').each((i, elem) => {
@@ -150,5 +149,5 @@ module.exports = {
   imagesHandler,
   contentFixer,
   mathFixer,
-  boxFixer
+  boxFixer,
 }
