@@ -40,6 +40,19 @@ const imagesHandler = html => {
   return $.html()
 }
 
+const boxFixer = html => {
+  const $ = cheerio.load(html)
+  $('p').each((i, elem) => {
+    const $elem = $(elem)
+    if ($elem.attr('data-style')) {
+      $elem.attr('class', 'paragraph')
+      $elem.wrap('<aside class="short note"></aside>')
+      $elem.removeAttr('data-style')
+    }
+  })
+  return $('container').html()
+}
+
 const mathFixer = html => {
   const $ = cheerio.load(html)
   $(
@@ -136,4 +149,5 @@ module.exports = {
   imagesHandler,
   contentFixer,
   mathFixer,
+  boxFixer,
 }
