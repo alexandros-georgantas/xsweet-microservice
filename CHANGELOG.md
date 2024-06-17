@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.2](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.3.1...v2.3.2) (2024-06-17)
+
+
+### Bug Fixes
+
+* **service:** wrapper will only happens if useBox is set ([4a59e1f](https://gitlab.coko.foundation/cokoapps/xsweet/commit/4a59e1fd82297cf7b6d076613724f4f92dc8caf6))
+* adding border class at the place of paragraph which was retained as data-style ([a50dc5b](https://gitlab.coko.foundation/cokoapps/xsweet/commit/a50dc5b985fcacb13b4b1109ac6cf1e02ca9ebaa))
+* adding wrapper inside bordered paragraph ([af93198](https://gitlab.coko.foundation/cokoapps/xsweet/commit/af931981f0348976c87411c504c7b37ca2f32337))
+* removing border class and retaining paragraph class for p tag ([9e22f34](https://gitlab.coko.foundation/cokoapps/xsweet/commit/9e22f3408e5e591af9fa6016c5c3f1c7a34eb2e2))
+
 ### [2.3.1](https://gitlab.coko.foundation/cokoapps/xsweet/compare/v2.3.0...v2.3.1) (2024-05-28)
 
 
