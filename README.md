@@ -64,3 +64,7 @@ This service runs a single pipeline of XSweet scripts. However, there are a few 
 ## Mathtype
 
 This uses a Ruby gem to decode binary MathType files that are found inside of the DOCX file; otherwise, these files would be output as WMF files, which can't be viewed by a browser. Not all WMF files are MathType.
+
+## Updating XSweet libraries
+
+This microservice downloads ZIP files of three XSweet libraries. If these are updated, make a new tag in the Gitlab repository and then update `Dockerfile` and `Dockerfile-development` to point to the new tag.
